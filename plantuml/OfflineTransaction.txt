@@ -1,0 +1,49 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Offline Transaction
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+activate CP
+CP ->o CP: Connection restored()
+CP -> CS: Heartbeat.req
+activate CS
+CS --> CP: Heartbeat.conf
+deactivate CS
+
+loop for all transactions since connection lost
+
+
+CP -> CS: StartTransaction.req
+activate CS
+CS --> CP: StartTransaction.conf
+deactivate CS
+
+  opt
+  CP -> CS: MeterValues.req
+  activate CS
+  CS --> CP: MeterValues.conf
+  deactivate CS
+  |||
+  end
+
+  note right of CS
+  MeterValues can also
+  be put in the StopTransaction
+  transactionData field
+  end note
+
+CP -> CS: StopTransaction.req
+activate CS
+CS --> CP: StopTransaction.conf
+deactivate CS
+|||
+deactivate CP
+end
+
+
+
+@enduml

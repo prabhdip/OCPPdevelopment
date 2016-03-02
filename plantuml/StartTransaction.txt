@@ -1,0 +1,81 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Start Transaction
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+group First transaction: caching identification
+      EV -> CP: present identification()
+      activate CP
+
+      CP -> CS: Authorize.req
+      activate CS
+      CS --> CP: Authorize.conf
+      deactivate CS
+
+      CP ->o CP: store Id in authorization cache()
+
+        opt
+        CP ->o]: continue, start and\nstop regular charging session
+      deactivate CP
+        end
+end
+
+note over CP, CS
+Time periods between charge sessions can be minutes, but can also be days.
+end note
+
+group Second transaction: using cached Id
+    EV -> CP: plugin cable()
+    activate CP
+    CP -> CS: StatusNotification.req(Preparing)
+    activate CS
+    CS --> CP: StatusNotification.conf()
+
+
+    deactivate CS
+
+    EV -> CP: present identification()
+    CP ->o CP: check authorization cache()
+
+      opt
+      CP -> CS: Authorize.req
+      activate CS
+      CS --> CP: Authorize.conf
+      deactivate CS
+      end
+
+    opt if found valid in local authorization list or authorized
+    |||
+      opt if cable not permanently attached
+      CP ->o CP: lock connector()
+      end
+
+        CP ->o CP: start EnergyOffer()
+
+        CP -> CS: StatusNotification.req(Charging)
+        activate CS
+        CS --> CP: StatusNotification.conf()
+        deactivate CS
+
+
+
+
+        CP -> CS: StartTransaction.req(Charging)
+        activate CS
+        CS --> CP: StartTransaction.conf()
+        deactivate CS
+
+
+
+        CP ->o]: continue regular charging session
+        deactivate CP
+    end
+    |||
+end
+|||
+@enduml

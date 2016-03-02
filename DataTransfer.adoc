@@ -1,0 +1,156 @@
+<<<
+[[UseCases]]
+== <Use cases>
+
+===  UC.XX - Data Transfer +
+
+Functional Block: C. Remote Commands +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  |
+|*2*    | *ID*                     |
+|*3*    | *Objective(s)*           | To send information from the Central System to the Charge Point for a function that is not supported by OCPP.
+|*4*    | *Description*            | This use case covers the functionality of sending a dataTransfer PDU to the Charge Point.
+|       | _Actors_                 | Charge Point, Central System
+|       | _Scenario description_   | *1.* The Central System sends information to a Charge Point for a function not supported by OCPP with a <<datatransfer.req,DataTransfer.req>> PDU. . +
+                                     *2.* The Charge Point replies to the Central System with a <<datatransfer.conf,DataTransfer.conf>> PDU.
+|       | _Alternative scenarios_  | *1.* If the recipient of the request has no implementation for the specific
+                                      vendorId it returns a status ‘UnknownVendor’ and the data element
+                                      SHALL not be present.
+                                    *2.* In case of a messageId mismatch (if used) the
+                                    recipient returns the status ‘UnknownMessageId’.
+|*5*    | *Prerequisites*          | *1.* The _Core Profile_ is installed. +
+                                     *2.* If information for a function is not supported by OCPP.
+|*6*    | *Postconditions*         | *Successful postcondition:*  +
+                                     The <<datatransfer.req,DataTransfer.req>> PDU is received successfully.
+                                     *Failure postcondition:* In all other cases the
+                                     usage of status ‘Accepted’ or ‘Rejected’ and the data element is part of
+                                     the vendor-specific agreement between the parties involved.
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+
+image:Media/DataTransfer.png[Data Transfer,scaledwidth="95%"]
+
+
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                |
+                                      This section is informative. +
+
+                                      The mechanism of vendor-specific data transfer allows for the exchange
+                                      of data or messages not standardized in OCPP . As such, it offers a
+                                      framework within OCPP for experimental functionality that may find its
+                                      way into future OCPP versions. Experimenting can be done without
+                                      creating new (possibly incompatible) OCPP dialects. Secondly, it offers
+                                      a possibility to implement additional functionality agreed upon between
+                                      specific Central System and Charge Point vendors. +
+
+                                      The operation Vendor Specific Data MAY be initiated either by the
+                                      Central System or by the Charge Point. +
+
+                                      IMPORTANT: Please use with extreme caution and only for optional
+                                      functionality, since it will impact your compatibility with other
+                                      systems that do not make use of this option. We recommend mentioning the
+                                      usage explicitly in your documentation and/or communication. Please
+                                      consider consulting the Open Charge Alliance before turning to this option to
+                                      add functionality.
+
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                                                               | *ID* | *Requirement definition*    | *M/O/C* | *Rationale* | *Note*
+| 4.3 | FR | If information for a function is not supported by OCPP.                          |   | The Charge Point shall use the DataTransfer.req PDU.                                                                                     | M |   |
+| 4.3 | FR |                                                                                  |   | The vendorId in the request shall be known to the Central System and uniquely identify the vendor-specific implementation.               | S |   |
+| 4.3 | FR |                                                                                  |   | The messageId in the request PDU shall be used to indicate a specific message or implementation.                                         | S |   |
+| 4.3 | NF |                                                                                  |   | The length of data in both the request and response PDU is undefined and should be agreed upon by all parties involved.                  | M |   |
+| 4.3 | FR | If the recipient of the request has no implementation for the specific vendorId. |   | The recipient shall return a status ‘UnknownVendor’.                                                                                     | M |   |
+| 4.3 | FR | In case of a messageId mismatch (if used).                                       |   | The recipient shall return status ‘UnknownMessageId’                                                                                     | M |   |
+| 4.3 | NF | In all other cases.                                                              |   | The usage of status ‘Accepted’ or ‘Rejected’ and the data element is part of the vendor-specific agreement between the parties involved. | M |   |
+|=======================================================================
+
+<insert Sequence diagram>
+
+
+<<<
+[[Messages]]
+== Messages
+
+[[datatransfer.req]]
+=== DataTransfer.req
+This contains the field definition of the DataTransfer.req PDU sent
+either by the Central System to the Charge Point or vice versa.
+See also <<data-transfer>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*vendorId* |<<cistring255type, CiString255Type>> |1..1 |Required. This identifies the Vendor
+specific implementation
+
+|*messageId* |<<cistring50type, CiString50Type>> |0..1 |Optional. Additional identification
+field
+
+|*data* a|
+Text
+
+Length undefined
+
+ |0..1 |Optional. Data without specified length or format.
+|=======================================================================
+
+[[datatransfer.conf]]
+=== DataTransfer.conf
+This contains the field definition of the DataTransfer.conf PDU sent by
+the Charge Point to the Central System or vice versa in response to a
+<<datatransfer.req,DataTransfer.req>> PDU.
+See also <<data-transfer>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<datatransferstatus,DataTransferStatus>> |1..1 |Required. This indicates the
+success or failure of the data transfer.
+|*data* | Text Length undefined |0..1 |Optional. Data in response to request.
+|=======================================================================
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+[[datatransferstatus]]
+=== DataTransferStatus
+_Enumeration_
+
+Status in <<datatransfer.conf,DataTransfer.conf>>.
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*Accepted* |Message has been accepted and the contained request is
+accepted.
+
+|*Rejected* |Message has been accepted but the contained request is
+rejected.
+
+|*UnknownMessageId* |Message could not be interpreted due to unknown
+messageId string.
+
+|*UnknownVendorId* |Message could not be interpreted due to unknown
+vendorId string.
+|=======================================================================
+
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys
+
+Generic configuration keys.

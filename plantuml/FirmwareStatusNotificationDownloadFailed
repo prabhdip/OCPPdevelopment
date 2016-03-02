@@ -1,0 +1,45 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Firmware Status Notification – Download Failed
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+CP -> CS: UpdateFirmware.req()
+activate CP
+activate CS
+CS --> CP: UpdateFirmware.conf()
+deactivate CP
+deactivate CS
+
+
+CP -> CS: FirmwareStatusNotification.req(Downloading)
+activate CP
+activate CS
+CS --> CP: FirmwareStatusNotification.conf
+deactivate CP
+deactivate CS
+
+
+loop until download succesfull or retries reached
+note over CP
+Downloading firmware...
+end note
+end
+
+
+
+CP -> CS:  FirmwareStatusNotification.req(DownloadFailed)
+activate CP
+activate CS
+CS --> CP:  FirmwareStatusNotification.conf()
+deactivate CP
+deactivate CS
+
+
+CP ->o] : Return to idle state
+
+@enduml

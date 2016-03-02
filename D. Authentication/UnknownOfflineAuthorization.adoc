@@ -1,0 +1,109 @@
+<<<
+[[UseCases]]
+== Use cases
+
+===  UC.XX - Unknown Offline Authorization +
+
+Functional Block: D. Authentication
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Unknown Offline Authorization
+|*2*    | *ID*                     | UC.XX (sub to Offline Behavior)
+|*3*    | *Objective(s)*           | To allow automatic authorization of any "unknown" identifiers that cannot be explicitly authorized by Local Authorization List or Authorization Cache entries.
+|*4*    | *Description*            | This use cases describes the scenario of presented "unknown" identifiers other that are present in a Local Authorization List or Authorization Cache entries.
+|       | _Actors_                 | EV user, Charge Point, Central System
+|       | _Scenario description_   |
+                                      *1.* The Charge Point allows automatic authorization of any "unknown" identifiers.
+                                      *2.* The Charge Point rejects identifiers that are present in a Local Authorization List that have a status other than “Accepted” (Invalid, Blocked, Expired)
+                                      *3.* The Connection is restored.
+                                      *4.* the Charge Point SHALL send a <<start-transaction, Start Transaction>> request for any transaction that was authorized _offline_.
+
+|       | _Alternative scenarios_  | n/a
+|*5*    | *Prerequisites*          | When _offline_.
+|*6*    | *Postconditions*         | *Successful postcondition:*  +
+                                      When the authorization status in the <<starttransaction.conf>> is _Accepted_
+                                      *Failure postcondition:* +
+                                      When the authorization status in the <<starttransaction.conf>> is _not Accepted_.
+|*7*    | *Sequence diagram*       |
+|*8*    | *Error handling*         |
+
+                                    When the authorization status in the <<starttransaction.conf>> is not _Accepted_, and the transaction is still ongoing, the Charge Point SHOULD:
+
+                                    When <<configkey-stop-transaction-on-invalid-id,`StopTransactionOnInvalidId`>>
+                                    is set to _true_: stop the transaction normally as
+                                    stated in <<stop-transaction, Stop Transaction>>. The <<reason,Reason>> field in the <<stop-transaction, Stop Transaction>> request should be set to _DeAuthorized_.
+                                    If the Charge Point has the possibility to lock the Charging Cable, it SHOULD keep the Charging Cable locked until the owner presents his identifier. +
+                                    When <<configkey-stop-transaction-on-invalid-id,`StopTransactionOnInvalidId`>>
+                                    is set to _false_: only stop energy delivery to the
+                                    vehicle. +
+
+                                    *[NOTE]*
+                                    In the case of an invalid identifier, an operator MAY choose to charge the EV with a minimum amount of energy so the EV is able to drive away. This amount is controlled by
+                                    the optional configuration key: <<configkey-max-energy-on-invalid-id,`MaxEnergyOnInvalidId`>>.
+
+
+
+
+|*9*    | *Remarks*                |
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+
+|=======================================================================
+
+
+
+=== UC.XX - Requirements
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                                                               | *ID* | *Requirement definition*                                                                                                                                                          | *M/O/C* | *Rationale* | *Note*
+| 3.4.4 | FR | If offline. |   | Identifiers that are present in a Local Authorization List that have a status other than “Accepted” (Invalid, Blocked, Expired) shall be rejected. | M |   |
+| 3.4.4 | FR | If offline. |   | Identifiers that were valid but are apparently expired due to passage of time shall also be rejected.                                              | M |   |
+| 3.4.4 | FR | Unknown Offline Authorization capability is supported |   | The Charge Point shall report operation of the Unknown Offline Authorization capability the AllowOfflineTxForUnknownId  configuration key. | M |   |
+| 3.4.4 | FR | Unknown Offline Authorization capability is supported |   | The Charge Point shall control operation of the Unknown Offline Authorization capability the AllowOfflineTxForUnknownId configuration key. | M |   |
+| 3.4.4 | FR | If offline.                                           |   | Identifiers that are present in a Local Authorization List that have a status other than “Accepted” (Invalid, Blocked, Expired) shall be rejected. | M |   |
+| 3.4.4 | FR | If offline.                                           |   | Identifiers that were valid but are apparently expired due to passage of time shall also be rejected.                                              | M |   |
+| 3.4.4 | FR | Unknown Offline Authorization capability is supported |   | The Charge Point shall report operation of the Unknown Offline Authorization capability the AllowOfflineTxForUnknownId  configuration key.         | M |   |
+|=======================================================================
+
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+Generic messages.
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+[[authorizationstatus]]
+=== AuthorizationStatus
+_Enumeration_
+
+Status in a response to an <<authorize.req,Authorize.req>>.
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*Accepted* |Identifier is allowed for charging.
+
+|*Blocked* |Identifier has been blocked. Not allowed for charging.
+
+|*Expired* |Identifier has expired. Not allowed for charging.
+
+|*Invalid* |Identifier is unknown. Not allowed for charging.
+
+|*ConcurrentTx* |Identifier is already involved in another transaction
+and multiple transactions are not allowed. (Only relevant for a
+<<starttransaction.req,StartTransaction.req>>.)
+|=======================================================================
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys
+
+Generic configuration keys.

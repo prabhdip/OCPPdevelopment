@@ -1,0 +1,54 @@
+:numbered:
+:toc: macro
+
+= All use cases
+
+This clause classifies the elementary use cases for the communication system between EVCC and SECC. The communication
+to accomplish the identified use cases is defined in ISO 15118-2 and ISO 15118-3. If neither EV nor EVSE have any High
+Level Communication device, basic signalling applies.
+
+
+[cols="^0,^2,^2,^2,^2,^2,^2,^2,^2,options="header"]
+|=======================================================================
+| No.  | Use case | A. Provisioning | B. Transactions | C. Remote Commands | D. Authorization | E. Reservation | F. Smart Charging | G. Remote Trigger
+| 1  |	Cold boot Charge Point  |x | | | | | |
+| 2  |	Cold boot Charge Point (rejected)  | x | | | | | |
+| 3  |	User authentication  | | | |x| | |
+| 4  |	Locally start transaction   | | | | | | |
+| 5  |	Locally stop transaction   | | | | | | |
+| 6  |	Remotely start transaction   | | | | | | |
+| 7  |	Remotely stop transaction   | | | | | | |
+| 8  |	Firmware updates   | | | | | | |
+| 9 |	Download firmware update   | | | | | | |
+| 10 |	Install new firmware  | |  | | | | |
+| 11 |	Update of local authorization list   | | | | | | |
+| 12 | Receiving current status of a Charge Point   | | | | | | |
+| 13 |	Get Diagnostics   | | | | | | |
+| 14 |	Accepting a Charge Point in a network   | | | | | | |
+| 15 |	Unlock connector   | | | | | | |
+| 16 |	_with running transaction_   | | | | | | |
+| 16a |	_without running transaction_  | | | | | | |
+| 16b |	Smart charging  | | | | | | |
+| 17 |	Load balancing   | | | | | | |
+| 18 |	Central smart charging   | | | | | | |
+| 19 |	Local smart central   | | | | | | |
+| 20 |	Resetting   | | | | | | |
+| 21 |	Reset with transaction   | | | | | | |
+| 22 |	Reset without transaction   | | | | | | |
+| 23 |	Changing a Charge Point' status (available/unavailable)   | | | | | | |
+| 24 |	Reservation | | | | | | |
+| 25 |	Cancel  a reservation | | | | | | |
+| 26 |	Offline behavior | | | | | | |
+| 27 |	Offline start transaction | | | | | | |
+| 38 |	Offline stop transaction | | | | | | |
+| 39 |	Offline transaction | | | | | | |
+| 30 |	Send meter values | | | | | | |
+| 31 |	Configure Charge Point | | | | | | |
+| 32 |	Change Configuration | | | | | | |
+| 33 |	Set Configuration | | | | | | |
+| 34 |	Set charging profile | | | | | | |
+| 35 |	Set charging profile at start of transaction | | | | | | |
+| 36 |	Setting a charge profile in a RemoteStartTransaction request | | | | | | |
+| 37 |	Set charging profile outside a transaction | | | | | | |
+| 38 |	Trigger Message | | | | | | |
+|=======================================================================

@@ -1,0 +1,18 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Smart Charging Transaction
+
+actor "User" as US
+actor "EV" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CP -> CS : SetChargingProfile.req (connector, limit, purpose)
+CS --> CP : SetChargingProfile.conf()
+
+
+
+
+@enduml

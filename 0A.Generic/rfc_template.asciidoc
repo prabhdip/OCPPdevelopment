@@ -1,0 +1,145 @@
+:numbered:
+= OCA OCPP RFC
+
+**Title: __(Title of this RFC)__**
+
+Version: __(Version number of this revision of the RFC (v0.1, v0.2 etc.)__
+
+Date: __(Date of this revision of the RFC)__
+
+Initiator: __(OCA member initiating this RFC, Name (Company))__
+
+Supporters:
+__(Other OCA members supporting this RFC, list: Name (Company))__
+
+Goal:
+__(Goal of this RFC, what does it add to OCPP? what does it improve?)__
+
+
+__All text bellow can be seen as a new or improved functional block for the OCPP specification.
+If this is an improvement, copy the old functional block here and update it. Mark all the changes made.__
+
+'''
+
+== Scope
+__(Add scope of the new/improved functionality here)__
+
+
+=== Conventions
+__(New conventions)__
+
+
+=== References
+__(New references)__
+
+
+== User Cases
+__(Add the main use case(s) here. Also add alternative paths/use cases)__
+
+=== UC.01 - __(Use Case Name)__
+
+[cols="1,3,12"]
+|===
+| No.   | Type                   | Description
+
+| **1** | **Name**               | __(Name of this use case)__
+| **2** | **ID**                 | __(ID of this use case (same as chapter name: UC.01??)__
+| **3** | **Objectives**         | __(Objective of this use case, what is the goal of this use case)__
+| **4** | **Description**        | __(Description of this use case)__
+|       | Actors                 | __(Actors involved in this use case)__
+|       | Scenario description   | __(Describe the use case in steps)__
+|       | Alternative scenario's | __(list of alternative use scenario's, should be other use cases)__
+| **5** | **Prerequisites**      | __(Preconditions for this use case)__
+| **6** | **Post conditions**    | __(Post conditions after this use case is finished successfully)__
+| **7** | **Sequence diagram**   |
+|===
+
+__(Add the Sequence Diagram (.png) here. (Don't forget to add the plantuml source in the appendix)__
+
+[cols="1,3,12"]
+|===
+| **8** | **Error Handling**     | __(What is the expected behaviour when something goes wrong?)__
+| **9** | **Remarks**            | __(Add additional remarks here.)__
+|===
+
+==== UC.01 Requirements
+
+__(list of all requirments. ID: for example: FR.01.001.)__
+
+[cols="2,8,8,2"]
+|===
+| ID.           | Precondition                            | Requirements                 | M/O/C
+
+| __FR.xx.xxx__ | __(Precondition for this requirement)__ | __(The requirement itself)__ | __(M/O/C)__
+| __FR.xx.xxx__ |                                         |                              | __(M/O/C)__
+|===
+
+== Messages
+__(new/changed messages)__
+
+[[message.req]]
+=== Message.req
+__(Add introduction text of the message here)__
+
+[cols="3,3,1,5",options="header",]
+|=======================================================================
+| Field Name | Field Type | Card. | Description
+
+|*Field1*    | Field1Type | 0..*  | __(Description of field1)__
+|*Field1*    | Field1Type | 0..1  | __(Description of field2)__
+|=======================================================================
+
+
+== DataType
+__(new/changed datatypes)__
+
+[[exampleenum]]
+=== ExampleEnum
+_Enumeration_
+
+__(Add description of the enumeration here, also add link to message it is used in.)__
+
+[cols="2,10",options="header",]
+|=======================================================================
+| Value   | Description
+
+|*Value1* | __(description of value1)__
+|*Value2* | __(description of value2)__
+|=======================================================================
+
+
+[[exampleclass]]
+=== ExampleClass
+_Class_
+
+__(Add description of the class here, also add link to message it is used in.)__
+
+[cols="2,3,2,8",options="header",]
+|=======================================================================
+| Name    | Field Type | Card. | Description
+
+|*Field1* | Field1Type | 0..*  | __(Description of field1)__
+
+|*Field2* | Field1Type | 0..1  | __(Description of field2)__
+|=======================================================================
+
+
+== Configuration Keys
+__(new/changed configuration keys)__
+
+[[configkey-newkey]]
+==== `NewKeyName`
+
+[cols="1,3"]
+|===
+|*Required/optional*| __(required / optional)__
+|*Accessibility*| __(R / RW)__
+|*Type*| __(Data type of this key)__
+|*Description*| __(Add description of this configuration key here)__
+|===
+
+
+= Appendix
+
+== Sequence Diagram Source
+__(Add the plantuml source of the sequence diagrams here)__

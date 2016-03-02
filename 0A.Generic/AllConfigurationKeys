@@ -1,0 +1,53 @@
+:numbered:
+:toc: macro
+
+= All Configuration Keys
+
+[cols="^1,1,3",options="header",]
+|=======================================================================
+| CH  |  Configuration Key                           | Description
+| 9.1.1  | AllowOfflineTxForUnknownId              | The Configuration Key AllowOfflineTxForUnknownId is an optional Read/Write key of type boolean.
+| 9.1.2  | AuthorizationCacheEnabled               | The Configuration Key AuthorizationCacheEnabled is an optional Read/Write key of type boolean.
+| 9.1.3  | AuthorizeRemoteTxRequests               | The Configuration Key AuthorizeRemoteTxRequests is a required R or RW. Choice is up to Charge Point implementation. key of type boolean.
+| 9.1.4  | BlinkRepeat                             | The Configuration Key BlinkRepeat is an optional Read/Write key of type int with unit times.
+| 9.1.5  | ClockAlignedDataInterval                | The Configuration Key ClockAlignedDataInterval is a required Read/Write key of type int with unit seconds.
+| 9.1.6  | ConnectionTimeOut                       | The Configuration Key ConnectionTimeOut is a required Read/Write key of type int with unit seconds.
+| 9.1.7  | GetConfigurationMaxKeys                 | The Configuration Key GetConfigurationMaxKeys is a required Read-only key of type int.
+| 9.1.8  | HeartbeatInterval                       | The Configuration Key HeartbeatInterval is a required Read/Write key of type int with unit seconds.
+| 9.1.9  | LightIntensity                          | The Configuration Key LightIntensity is an optional Read/Write key of type int with unit %.
+| 9.1.10 | LocalAuthorizeOffline                   | The Configuration Key LocalAuthorizeOffline is a required Read/Write key of type boolean.
+| 9.1.11 | LocalPreAuthorize                       | The Configuration Key LocalPreAuthorize is a required Read/Write key of type boolean.
+| 9.1.12 | MaxEnergyOnInvalidId                    | The Configuration Key MaxEnergyOnInvalidId is an optional Read/Write key of type integer with unit Wh.
+| 9.1.13 | MeterValuesAlignedData                  | The Configuration Key MeterValuesAlignedData is a required Read/Write key of type CSL.
+| 9.1.14 | MeterValuesAlignedDataMaxLength         | The Configuration Key MeterValuesAlignedDataMaxLength is an optional Read-only key of type Maximum number of items in a <<configkey-meter-values-aligned-data, MeterValuesAlignedData>> Configuration Key..
+| 9.1.15 | MeterValuesSampledData                  | The Configuration Key MeterValuesSampledData is a required Read/Write key of type CSL.
+| 9.1.16 | MeterValuesSampledDataMaxLength         | The Configuration Key MeterValuesSampledDataMaxLength is an optional Read-only key of type Maximum number of items in a <<configkey-meter-values-sampled-data, MeterValuesSampledData>> Configuration Key..
+| 9.1.17 | MeterValueSampleInterval                | The Configuration Key MeterValueSampleInterval is a required Read/Write key of type int with unit seconds.
+| 9.1.18 | MinimumStatusDuration                   | The Configuration Key MinimumStatusDuration is an optional Read/Write key of type int with unit seconds.
+| 9.1.19 | NumberOfConnectors                      | The Configuration Key NumberOfConnectors is a required Read-only key of type int.
+| 9.1.20 | ResetRetries                            | The Configuration Key ResetRetries is a required Read/Write key of type int with unit times.
+| 9.1.21 | ConnectorPhaseRotation                  | The Configuration Key ConnectorPhaseRotation is a required Read/Write key of type CSL.
+| 9.1.22 | ConnectorPhaseRotationMaxLength         | The Configuration Key ConnectorPhaseRotationMaxLength is an optional Read-only key of type Maximum number of items in a <<configkey-connector-phase-rotation, ConnectorPhaseRotation>> Configuration Key..
+| 9.1.23 | StopTransactionOnEVSideDisconnect       | The Configuration Key StopTransactionOnEVSideDisconnect is a required Read/Write key of type boolean.
+| 9.1.24 | StopTransactionOnInvalidId              | The Configuration Key StopTransactionOnInvalidId is a required Read/Write key of type boolean.
+| 9.1.25 | StopTxnAlignedData                      | The Configuration Key StopTxnAlignedData is a required Read/Write key of type CSL.
+| 9.1.26 | StopTxnAlignedDataMaxLength             | The Configuration Key StopTxnAlignedDataMaxLength is an optional Read-only key of type Maximum number of items in a <<configkey-stop-txn-aligned-data, StopTxnAlignedData>> Configuration Key..
+| 9.1.27 | StopTxnSampledData                      | The Configuration Key StopTxnSampledData is a required Read/Write key of type CSL.
+| 9.1.28 | StopTxnSampledDataMaxLength             | The Configuration Key StopTxnSampledDataMaxLength is an optional Read-only key of type Maximum number of items in a <<configkey-stop-txn-sampled-data, StopTxnSampledData>> Configuration Key..
+| 9.1.29 | SupportedFeatureProfiles                | The Configuration Key SupportedFeatureProfiles is a required Read-only key of type CSL.
+| 9.1.30 | SupportedFeatureProfilesMaxLength       | The Configuration Key SupportedFeatureProfilesMaxLength is an optional Read-only key of type Maximum number of items in a <<configkey-supported-feature-profiles, SupportedFeatureProfiles>> Configuration Key..
+| 9.1.31 | TransactionMessageAttempts              | The Configuration Key TransactionMessageAttempts is a required Read/Write key of type int with unit times.
+| 9.1.32 | TransactionMessageRetryInterval         | The Configuration Key TransactionMessageRetryInterval is a required Read/Write key of type int with unit seconds.
+| 9.1.33 | UnlockConnectorOnEVSideDisconnect       | The Configuration Key UnlockConnectorOnEVSideDisconnect is a required Read/Write key of type boolean.
+| 9.1.34 | WebSocketPingInterval                   | The Configuration Key WebSocketPingInterval is an optional Read/Write key of type int with unit seconds.
+| 9.2.1  | LocalAuthListEnabled                    | The Configuration Key LocalAuthListEnabled is a required Read/Write key of type boolean.
+| 9.2.2  | LocalAuthListMaxLength                  | The Configuration Key LocalAuthListMaxLength is a required Read-only key of type int.
+| 9.2.3  | SendLocalListMaxLength                  | The Configuration Key SendLocalListMaxLength is a required Read-only key of type int.
+| 9.1.4  | ReserveConnectorZeroSupported           | The Configuration Key ReserveConnectorZeroSupported is an optional Read-only key of type boolean.
+| 9.4.1  | ChargeProfileMaxStackLevel              | The Configuration Key ChargeProfileMaxStackLevel is a required Read-only key of type int.
+| 9.4.2  | ChargingScheduleAllowedChargingRateUnit | The Configuration Key ChargingScheduleAllowedChargingRateUnit is a required Read-only key of type CSL.
+| 9.4.3  | ChargingScheduleMaxPeriods              | The Configuration Key ChargingScheduleMaxPeriods is a required Read-only key of type int.
+| 9.4.4  | ConnectorSwitch3to1PhaseSupported       | The Configuration Key ConnectorSwitch3to1PhaseSupported is an optional Read-only key of type bool.
+| 9.4.5  | MaxChargingProfilesInstalled            | The Configuration Key MaxChargingProfilesInstalled is a required Read-only key of type int.
+|=======================================================================
+                                                                                                                 |

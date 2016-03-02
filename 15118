@@ -1,0 +1,42 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Smart Charging (15118)
+
+actor "EV" as EV
+participant "EVSE" as ES
+participant "Central System" as CS
+
+
+EV -> ES : local charging needs()
+
+ES -> CS : TransactionStarted.req(id-tag, evChargingNeeds)
+
+LC --> ES : TransactionStarted.conf(OK, chargingProfile, csChargingNeeds)
+
+ES --> EV : send charging limits()
+
+loop Charging
+EV ->o EV : calculate charging schedule()
+
+EV -> ES : send and execute charge schedule(ChargingSchedule)
+
+ES -> CS : NotifyEVChargingSchedule.req(ChargingSchedule)
+
+LC --> ES : NotifyEVChargingSchedule.conf(OK)
+
+opt Renegotiation by local controller
+
+CS -> ES : SetChargingProfile.req(connector, limit)
+
+ES --> CS : SetChargingProfile.conf(OK)
+
+ES --> EV : send charging limits()
+
+EV ->o ES :  finished charging schedule()
+end
+end
+
+
+ES -> CS

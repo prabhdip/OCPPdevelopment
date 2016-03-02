@@ -1,0 +1,27 @@
+@startuml
+'skinparam dpi 600
+hide footbox
+
+title Clear Charging Profile\n\nPrecondition:\n - at least charging profile installed.\n
+
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+note left : Optional parameters:\n
+- ConnectorId\n
+- ChargingProfileId\n
+- ChargingProfilePurpose - StackingLevel\n
+
+CS -> CP : ClearChargingProfile.req()
+activate CP
+activate CS
+CP --> CS : ClearChargingProfile.conf()
+deactivate CP
+deactivate CS
+
+CP ->o : delete profile(s)()
+
+note right : Charge Point\ndeletes all profiles\nthat match request parameters.
+
+
+@enduml

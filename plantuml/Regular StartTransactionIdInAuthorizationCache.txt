@@ -1,0 +1,68 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Regular Start Transaction - Id in Authorization Cache \n\n__Precondition: LocalAuthListEnabled = True__
+
+
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+... __First action: installing local authorization list__ ...
+
+
+CS -> CP : SendLocalList.req(UpdateType = Full)
+CP --> CS : SendLocallist.conf
+
+
+... __Second action: new authorization reuqest__ ...
+
+
+EV -> CP : plugin cable()
+activate EV #FFFFFA
+
+CP -> CS : StatusNotification.req(Preparing)
+CS --> CP : StatusNotification.conf()
+
+EV -> CP : present identification()
+
+CP ->o CP : check local authorization list()
+
+alt if id not found in local authorization list
+CP -> CS : Authorize.req()
+activate CS
+CS --> CP : Authorize.conf()
+deactivate CS
+end
+
+alt if found valid in local authorization list or authorized
+
+alt if cable not permanently attached
+CP ->o CP : lock connector()
+end
+
+CP ->o CP : start EnergyOffer()
+
+CP -> CS : StatusNotification.req(Charging)
+CS --> CP : StatusNotification.conf()
+
+
+CP -> CS : StartTransaction.req(Charging)
+CS --> CP : StartTransaction.conf()
+
+CP ->o] : Continue regular charging session
+|||
+end
+opt if not valid
+CP --> EV : optional notification()
+
+CP ->o CP : Return to idle state()
+|||
+deactivate EV
+end
+
+
+@enduml

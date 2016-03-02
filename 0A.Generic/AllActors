@@ -1,0 +1,83 @@
+:numbered:
+:toc: macro
+
+= All Actors
+
+
+[cols="^1,1,3",options="header",]
+|=======================================================================
+| Actor name       | Actor type | Actor description
+| User             | Actor      | The user of a charge point and the electric vehicle.
+| Connector        | Subsystem  | The term “Connector”, as used in this specification, refers to an independently
+                                  operated and managed electrical outlet on a Charge Point. This usually corresponds
+                                  to a single physical connector, but in some cases a single outlet may have multiple
+                                  physical socket types and/or types (e.g. four-wheeled EVs and electric scooters).
+| CPO              | Actor      | Charge Point Operator
+| Central System   | Subsystem  | Charge Point Management System: the central system that manages Charge Points and has the
+                                  information for authorizing users for using its Charge Points.
+| Charge Point     | Device     | The Charge Point is the physical system where an electric vehicle can be charged. A Charge
+                                  Point has one or more connectors.
+| Charge Point Operator | Actor | Entity with which the customer has a contract related to all the services to the EV operation.
+| Electric Vehicle | Device     | Electric vehicle, distributed energy resource with a remote battery and socket.
+|=======================================================================
+
+
+*Primary actors*
+_Role involved directly in the charging process_.
+* Electric Vehicle
+Any vehicle propelled by an electric motor drawing current from a rechargeable storage battery or from other portable energy storage devices (rechargeable, using energy from a source off the vehicle such as a residential or public electric service), which is manufactured primarily for use on public streets, roads or highways.
+[ISO 15118-1:2013]
+* Electric Vehicle User
+Person or legal entity using the vehicle and providing information about driving needs and consequently influences charging patterns.
+NOTE: Driving needs such as range and time of availability are necessary to achieve the most appropriate charging scenario.
+[ISO 15118-1:2013]
+
+* Charger
+* ECU
+* HMI
+* Electric Vehicle Supply Equipment
+* Electrize Energy Meter
+* Connector
+* Paying unit
+* HMI
+
+
+*Secondary actors*
+_Role involved indirectly in the charging process_
+
+* E-mobility Operator Clearing Souse
+* Demand Clearing House
+* Original Equipment Manufacturer
+* Fleet operator
+* E-Mobility Operator
+* Distribution System Operator
+* Meter Operator
+* Electricity provider
+
+''''
+
+Following IEC 62559-2:2015, the actor list contains the following information for each actor:
+
+* Area +
+_Example:_ Smart Grid/energy systems.
+* Mapping to grouping +
+_Example:_ To sort requirements for "smart metering" within the area "energy system".
+* Name of the actor +
+_Example:_ Distribution system operator (DSO).
+* Abbreviation for the actor name +
+_Example:_ DSO.
+* Actor type (e.g. roles, application, ...) +
+_Example:_ DSO is a role, an energy management system (EMS) is an application.
+* Definition of actor +
+Here the actor shall be described. Usually the actor is taken from an existing actor list so that the definition already exists.
+* Possible actors fulfilling this role +
+_Example:_ For the actor “meter operator” it might be a DSO or an independent meter operator, depending on the national background or the specific project.
+* International, regional or national relevance
+Actors might differentiate in definition depending on regional or national legislation or markets.
+* Source of the definition +
+Actors should be based as far as possible on existing data models in the relevant area or domain.
+_Example:_ Data models like CIM common information model (IEC 61968/61970) or COSEM in the metering domain (IEC 62056).
+* Parent +
+This column is used to build up a kind of hierarchy of actors.
+_Example:_ A grid operator as parent of transmission or distribution system operator (TSO or DSO).
+* Further comments

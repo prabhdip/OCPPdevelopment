@@ -1,0 +1,54 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Offline Stop Transaction
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+activate EV
+EV -> CP: Present identification()
+activate CP
+
+
+    opt if (id) startId) or (ParentId = ParentId of startId)
+
+
+    CP ->o CP: stop EnergyOffer()
+    CP ->o CP: unlock connector()
+    CP ->o CP: connection restored()
+
+    CP ->o CP: send queued message()
+
+    CP --> EV: optional notification()
+
+    CP ->o CP: connection restored()
+    end
+
+
+
+CP -> CS: StartTransaction.req()
+activate CS
+CS --> CP: StartTransaction.conf()
+deactivate CS
+    alt if authorized
+    CP ->o]: Continue regular charging session\n(2.1.3, #2, skip StartTransaction)
+    |||
+    end
+
+    alt if not authorized
+    CP ->o]: Continue "start charging session\n- Id not accepted"
+    |||
+    end
+|||
+
+
+deactivate CP
+deactivate EV
+
+
+
+@enduml

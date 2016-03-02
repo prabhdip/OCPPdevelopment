@@ -1,0 +1,44 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Diagnostics Status Notification – Upload Failed
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CS -> CP : GetDiagnostics.req(retries, location)
+CP --> CS: GetDiagnostics.conf()
+
+
+
+CP -> CS: DiagnosticsStatusNotification.req(status = Uploading)
+activate CP
+activate CS
+CS --> CP: DiagnosticsStatusNotification.conf()
+deactivate CS
+deactivate C
+
+
+
+
+loop until upload succesful or retries reached
+
+note over CP
+Uploading diagnostics...
+end note
+
+
+
+
+CP -> CS: DiagnosticsStatusNotification.req(status = UploadFailed)
+activate CP
+activate CS
+CS --> CP: DiagnosticsStatusNotification.conf()
+deactivate CS
+deactivate C
+
+
+CP ->o] : Return to idle state
+
+@enduml

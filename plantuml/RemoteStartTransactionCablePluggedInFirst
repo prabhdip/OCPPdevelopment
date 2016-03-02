@@ -1,0 +1,51 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Remote Start Transaction – Cable Plugged In First\n\nPreconditions:\n- Charging cable plugged in\n - Availability state: Preparing\
+actor "External Trigger" as ET
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+Note left : An external trigger can be\nfor example a Charge Point\nOperator or a user app.
+
+
+
+ET -> CS:  remote start()
+activate EV
+activate CS
+CS  -> CP:  RemotestartTransaction.req()
+activate CP
+
+opt AuthorizeRemoteTxRequests = true
+CP -> CS :Authorize.req
+activate CS
+CS --> CP :Authorize.conf
+deactivate CS
+end
+
+CP --> CS: RemotestartTransaction.conf()
+deactivate EV
+
+CS --> ET: optional notification
+
+opt if cable not permanently attached
+CP ->o CP : lock connector()
+end
+
+CP ->o CP : start EnergyOffer()
+
+CP -> CS: StatusNotification.req(Charging)
+activate CS
+CS --> CP: StatusNotfication.conf()
+deactivate CS
+
+CP -> CS: startTransaction.req()
+activate CS
+CS --> CP: startTransaction.conf()
+deactivate CS
+
+
+
+@enduml

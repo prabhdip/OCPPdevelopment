@@ -1,0 +1,22 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Set Charging Profile (rejected)
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+CS ->o CP:SetChargingProfile.req()
+
+  alt if Request has not been accepted and will not be executed
+  CP ->o CS: SetChargingProfile.conf(rejected)
+  end
+
+  alt if the Request is not supported
+  CP ->o CS: SetChargingProfile.conf(not supported)
+  end
+
+
+@enduml

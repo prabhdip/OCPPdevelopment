@@ -1,0 +1,17 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Send Local List
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CP -> CS: SendLocalList.req()
+activate CP
+activate CS
+CS --> CP: SendLocalList.conf(Accpted)
+deactivate CS
+deactivate CP
+
+@enduml

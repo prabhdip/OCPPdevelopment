@@ -1,0 +1,69 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Regular Transaction - Authorization cache and local authorization list both supported.
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+EV -> CP : Present identification()
+
+
+CP ->o CP : Check local authorization list()
+alt if id found
+alt valid
+CP ->o] : Continue regular charging session
+end
+
+alt not valid
+CP ->o CP : Return to idle state()
+end
+end
+
+
+alt not found in local authorization list and LocalPreAuthorize = true
+CP ->o CP : Check authorization cache()
+
+alt if id found and valid
+CP ->o] : Continue regular charging session
+end
+
+alt not found
+CP -> CS : Authorize.req()
+activate CS
+CS --> CP: Authorize.conf()
+deactivate CS
+end
+
+alt if accepted
+CP ->o] : Continue regular charging session
+end
+
+alt if not accepted
+CP ->o CP : Return to idle state()
+end
+
+end
+
+
+
+
+alt not found in local authorization list and LocalPreAuthorize = false
+CP -> CS : Authorize.req()
+activate CS
+CS --> CP: Authorize.conf()
+deactivate CS
+
+alt if valid
+CP ->o] : Continue regular charging session
+end
+
+alt if not valid
+CP ->o CP : Return to idle state()
+end
+
+end
+
+@enduml

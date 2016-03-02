@@ -1,0 +1,44 @@
+@startuml
+skinparam dpi 400
+hide footbox
+title Remote Start Transaction (running)
+
+actor "External Trigger" as ET
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+
+ET -> CS:  remote stop()
+activate ET
+activate CS
+CS  -> CP:  RemotestopTransaction.req()
+activate CP
+CP --> CS: RemotestopTransaction.conf()
+CS --> ET: optional notification
+CP ->o CP: stop EnergyOffer()
+
+    opt if cable not permanently attached
+    CP ->o CP: Unlock connector()
+    end
+
+
+CP ->o CS: StatusNotification.req(Finishing)
+CS --> CP: StatusNotification.conf()
+CP ->o CS: stopTransaction.req(Reason = Remote)
+CS --> CP: stopTransaction.conf()
+deactivate CS
+deactivate CP
+CS --> ET: optional notification
+
+ET-> CP: Unplug cable
+activate CP
+CP -> CS: StatusNotification.req(Available)
+activate CS
+CS --> CP: StatusNotfication.conf()
+deactivate CS
+deactivate CP
+deactivate ET
+
+
+@enduml

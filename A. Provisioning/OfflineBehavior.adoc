@@ -1,0 +1,231 @@
+<<<
+[[UseCases]]
+== Use Cases
+
+===  UC.04 - Offline Behavior +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Offline Behavior
+|*2*    | *ID*                     | UC.04
+|       | _Functional Block_       | A. Provisioning
+|*3*    | *Objective(s)*           | To attain Stand alone operation of the Charge Point.
+|*4*    | *Description*            | This use case describes that, in the event of unavailability of the communication,
+                                     the Charge Point is designed to operate stand-alone. In that situation, the Charge Point is said to be _offline_.
+|       | _Actors_                 | Charge Point, Central System
+|       | _Scenario description_   | *1.* The Central System or communication is unavailable. +
+                                     *2.* The Charge Point operates stand-alone. +
+                                     *3.* The Charge Point allows automatic authorization of any presented identifier by either: +
+                                     _a._ The Local Authorization List;  a list of identifiers that can be synchronized with the Central System. +
+                                     _b._ Authorization Cache entries; that autonomously maintains a record of previously presented
+                                     identifiers that have been successfully authorized by the Central System. (Successfully meaning:
+                                     a response received on a message containing an idTag).
+|       | _Alternative scenarios_  | *1.* Offline authorization through the Local Authorization List. (link to relevant use case) +
+                                     *2.* Offline authorization through Authorization Cache entries. (link to relevant use case) +
+                                     *3.* Offline start transaction. (link to relevant use case) +
+                                     *4.* Offline stop transaction. (link to relevant use case) +
+                                     *5.* Idle Charge Point. (link to relevant use case) +
+                                     *6.* Unknown Offline Authorization. (link to relevant use case)
+|       | _Rationale_              | This allows (a) authorization of a user when offline, and (b) faster (apparent) authorization response
+                                     time when communication between Charge Point and Central System is slow.
+|*5*    | *Prerequisites*          | *1.* The _Core Profile_ is installed. +
+                                     *2.* The Profile _Local Auth List Management_ is installed.
+|*6*    | *Postconditions*         | *Successful postcondition:* +
+                                     The Charge Point is able to operate stand alone. + CHECK
+                                     *Failure postcondition:*
+                                     The Charge Point is _not_ able to operate stand alone. CHECK
+|*7*    | *Sequence diagrams*      |
+|=======================================================================
+
+image:media/OfflineTransaction.png["Offline Transaction",scaledwidth="95%"]
+
+image:media/IldeChargePoint.png["Idle Charge Point",scaledwidth="95%"]
+
+image:media/OfflineStartTransaction.png["Offline Start Transaction", scalewidth-"95%"]
+
+image:media/OfflineStopTransaction.png["Offline Start Transaction", scalewidth-"95%"]
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                |
+                                      When _offline_, the Charge Point MUST queue any transaction-related messages that
+                                      it would have sent to the Central System if the Charge Point had been online. +
+
+                                      While not yet accepted by the Central System, the Charge Point may allow locally-authorized
+                                      transactions if it is configured to do so, as described in <<local-authorization-and-offline-behavior,
+                                      Local Authorization & Offline Behavior>>. Parties who want to implement this behavior must realize that
+                                      it is uncertain if those transactions can ever be delivered to the Central System. +
+
+                                      A Charge Point MAY support the (automatic) authorization of any presented identifier when _offline_, to avoid
+                                      refusal of charging to bona-fide users that cannot be explicitly authorized by Local Authorization List/Authorization
+                                      Cache entries. This functionality is explained in more detail in <<unknown-offline-authorization, Unknown Offline
+                                      Authorization>>.
+
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+=== UC.XX - Requirements related to Authorization Cache +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                                                               | *ID* | *Requirement definition*                                                                                                                                                          | *M/O/C* | *Rationale* | *Note*
+| 3.4.1 | FR |                                                                                                           | FR.04.001   | Authorization Cache values shall be persisted across reboots.                                                                          | M |                                                                                                                                        |
+| 3.4.1 | FR |                                                                                                           | FR.04.002  | Authorization Cache values shall be persisted across power outages.                                                                    | M |                                                                                                                                        |
+| 3.4.1 | FR | When an identifier is presented that is stored in the cache as NOT-valid, and the Charge Point is online. | FR.04.003  | An Authorize.req shall be sent to the central System.                                                                                  | M |                                                                                                                                        |
+| 3.4.1 | FR | If present.                                                                                               | FR.04.004  | The operation of the Authorization Cache shall be reported the AuthorizationCacheEnabled configuration key.                            | M |                                                                                                                                        | With purpose TxDefaultProfile for the duration of the current transaction only.
+| 3.4.1 | FR |                                                                                                           | FR.04.005  | The operation of the Authorization Cache shall be controlled by the AuthorizationCacheEnabled configuration key.                       | M |                                                                                                                                        |
+| 3.4.1 | FR | When the validity of a Authorization Cache entry expires.                                                 | FR.04.006  | The Authorization cache shall be changed to expired in the Cache.                                                                      | M |                                                                                                                                        |
+| 3.4.1 | NF |                                                                                                           | NF.04.001  | The Charge Point shall implement an Authorization Cache.                                                                               | O | This autonomously maintains a record of previously presented identifiers that have been successfully authorized by the Central System. |
+| 3.4.1 | NF | Authorization Cache is implemented.                                                                       | NF.04.002  | The Authorization Cache shall contain all the latest received identifiers.                                                             | M |                                                                                                                                        |
+| 3.4.1 | NF |                                                                                                           | NF.04.003  | The Authorization Cache shall be updated using all received IdTagInfo.                                                                 | M |                                                                                                                                        |
+| 3.4.1 | NF | When an IdTagInfo is received for an identifier in the Cache                                              | NF.04.004  | The Authorization cache shall be be updated.                                                                                           | M |                                                                                                                                        |
+| 3.4.1 | NF | When an identifier is presented that is stored in the cache as NOT-valid, and the Charge Point is online  | NF.04.005  | The Charge Point shall send an Authorize.req  to the Central System to check the current state of the identifier.                      | M | To check the current state of the identifier.                                                                                          |
+| 3.4.1 | C  |                                                                                                           | C.04.001   | Authorization Cache values shall be stored in non-volatile memory.                                                                     | M |                                                                                                                                        | It is therefore allowed to send, for example, an Authorize request or a Notifications request before the transaction-related message queue has been emptied, so that customers are not kept waiting and urgent notifications are not delayed.
+| 3.4.1 | C  | If new identifier authorization data is received and the Authorization Cache is full.                     | C.04.002   | The Charge Point shall remove any NOT-valid entries, and then, if necessary, the oldest valid entries to make space for the new entry. | M |                                                                                                                                        |
+| 3.4.1 | C  |                                                                                                           | C.04.003   |                                                                                                                                        | M |                                                                                                                                        |
+|=======================================================================
+
+
+=== UC.XX - Requirements to Offline Behavior +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                                                               | *ID* | *Requirement definition*                                                                                                                                                          | *M/O/C* | *Rationale* | *Note*
+| 3.4    | NF      | In the event of unavailability of communication. (i.e. Offline).                                                                                      |    | The Charge Point shall be able to operate stand-alone.                                                                                                                                                               | M     | This allows (a) authorization of a user when offline, and (b) faster (apparent) authorization response                                                                                                               | (i.e. Offline).
+| 3.4    | C       |                                                                                                                                                       |    | The Charge Point shall support local authorization of identifiers,using an Authorization Cache and/or a Local Authorization List.                                                                                    | O     | To improve the experience for users. This allows (a) authorization of a user when offline, and (b) faster (apparent) authorization response Time when communication between Charge Point and Central System is slow. |
+| 3.4    | NF      | In the event of unavailability of communication.                                                                                                      |    | The LocalAuthorizeOffline configuration key shall control whether a Charge Point will authorize a user using the Authorization Cache and/or the Local Authorization List.                                            | M     |                                                                                                                                                                                                                      |
+| 3.4    | FR      | If offline.                                                                                                                                           |   | The Charge Point shall support the (automatic) authorization of any presented identifier. | O                      | To avoid refusal of charging to bona-fide users that cannot be explicitly authorized by Local Authorization List/Authorization Cache entries. |
+| 3.4.2  | FR      |                                                                                                                                                       |    | The Local Authorization List shall be persisted across reboots and power outages.                                                                                                                                   | M     |                                                                                                                                                                                                                       |
+| 3.4.2  | FR      | The Charge Points supports Local Authorization List.                                                                                                  |    | The Charge Point shall implement the LocalAuthListMaxLength.                                                                                                                                                       | M     | This gives the Central System a way to known the the maximum possible number of Local Authorization List elements in a Charge Point.                                                                                   |
+| 3.4.2  | FR      |                                                                                                                                                       |    | The Charge Point shall indicate whether the Local Authorization List is supported by the presence or absence of the LocalAuthListManagement element in the value of the SupportedFeatureProfiles  configuration key. | M     |                                                                                                                                                                                                                      |
+| 3.4.2  | FR      |                                                                                                                                                       |    | The Charge Point shall indicate  Whether the Local Authorization List is enabled is reported and controlled by the LocalAuthListEnabled configuration key.                                                           | M     |                                                                                                                                                                                                                      |
+| 3.4.2  | FR      |                                                                                                                                                       |    | The Central System shall be synchronized by sending a complete list of identifiers to replace the Local Authorization List.                                                                                          | M     |                                                                                                                                                                                                                      |
+| 3.4.2  | FR      |                                                                                                                                                       |    | The Central System shall be synchronized by sending a list of changes (add, update, delete) to apply to the Local Authorization List.                                                                                | M     |                                                                                                                                                                                                                      |
+| 3.4.2  | FR      |                                                                                                                                                       |    | The Charge Point shall not modify the contents of the Authorization List by any other means than upon a the receipt of a SendLocalList PDU from the Central System.                                                  | N     | Conflicts between the local authorization list and the validity reported in, for instance, a StartTransaction.conf message might occur.                                                                              |
+| 3.4.2  | FR      | Conflicts between the local authorization list and the validity reported in, for  instance a StartTransaction.conf message might occur.               |    | The Charge Point shall inform the Central System by sending a StatusNotification with ConnectorId set to 0, and ErrorCode set to 'LocalListConflict'.                                                                | M     |                                                                                                                                                                                                                      |
+| 3.4.3  | FR      |                                                                                                                                                       |    | The Authorization Cache and Local Authorization List shall be distinct logical data structures.                                                                                                                      | M     |                                                                                                                                                                                                                      |
+| 3.4.3  | FR      |                                                                                                                                                       |    | Identifiers known in the Local Authorization List SHALL NOT be added to the Authorization Cache.                                                                                                                     | N     |                                                                                                                                                                                                                      |
+| 3.6 | FR | If offline. |   | The Charge Point shall queue any transaction-related messages that it would have sent to the Central System if the Charge Point had been online. | M | |
+| 3.12.5 | FR      | If a Charge Point goes offline after having received a transaction-specific charging profile with purpose TxProfile.                                  |    | The Charge Point shall continue to use the TxProfile for the duration of the transaction.                                                                                                                            | O     |                                                                                                                                                                                                                      |
+| 3.12.6 | FR      | If a Charge Point goes offline before a transaction is started or before a transaction-specific charging profile with purpose TxProfile was received. |    | The Charge Point shall use the charging profiles which are available.                                                                                                                                                 | M     | With purpose TxDefaultProfile for the duration of the current transaction only.                                                                                                                                     |
+| 3.12.6 | FR      | If a Charge Point goes offline, without having any charging profiles.                                                                                 |    | The Charge Point will execute a transactions as if no constraints apply.                                                                                                                                             | M     |                                                                                                                                                                                                                      |
+| 4.10 | FR | After having been offline. |   | The Charge Point shall update the Central System about its status.                                                                                 | M |                                                                                                          |
+| 4.10 | FR | While offline.             |   | The Charge Point SHOULD send a StatusNotification.req PDU with its current status.                                                                 | M |                                                                                                          |
+| 4.10 | FR | While offline.             |   | The Charge Point shall send a StatusNotification.req PDU to report an error that occurred.                                                         | O |                                                                                                          |
+| 4.10 | C  | While offline.             |   | The Charge Point SHOULD NOT send StatusNotification.req PDUs for historical status change events that happened while the Charge Point was offline. | C | Those that do not inform the Central System of Charge Point errors or the Charge Point’s current status. |
+|=======================================================================
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+_Generic Messages_
+
+<<<
+[[Data_Types]]
+== DataTypes
+
+[[authorizationstatus]]
+=== AuthorizationStatus
+_Enumeration_
+
+Status in a response to an <<authorize.req,Authorize.req>>.
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*Accepted* |Identifier is allowed for charging.
+
+|*Blocked* |Identifier has been blocked. Not allowed for charging.
+
+|*Expired* |Identifier has expired. Not allowed for charging.
+
+|*Invalid* |Identifier is unknown. Not allowed for charging.
+
+|*ConcurrentTx* |Identifier is already involved in another transaction
+and multiple transactions are not allowed. (Only relevant for a
+<<starttransaction.req,StartTransaction.req>>.)
+|=======================================================================
+
+
+[[idtaginfo]]
+=== IdTagInfo
+_Class_
+
+Contains status information about an identifier. It is returned in
+Authorize, Start Transaction and Stop Transaction responses.
+
+If expiryDate is not given, the status has no end date.
+
+[cols=",,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Description*
+|*expiryDate* |dateTime |Optional. This contains the date at which
+idTag should be removed from the Authorization Cache.
+
+|*parentIdTag* |<<idtoken,IdToken>> |Optional. This contains the parent-identifier.
+
+|*status* |<<authorizationstatus,AuthorizationStatus>> |Required. This contains whether the
+idTag has been accepted or not by the Central System.
+|=======================================================================
+
+[[idtoken]]
+=== IdToken
+_Class_
+
+Contains the identifier to use for authorization. It is a case
+insensitive string. In future releases this may become a complex type to
+support multiple forms of identifiers.
+
+[cols=",,",options="header",]
+|==============================================================
+|*Field Name* |*Field Type* |*Description*
+|*IdToken* |String[20] |Required. IdToken is case insensitive.
+|==============================================================
+
+
+<<<
+[[ConfigurationKeys]]
+== ConfigurationKeys
+
+[[configkey-allow-offline-tx-for-unknown-id]]
+==== `AllowOfflineTxForUnknownId`
+
+[cols="1,3"]
+|===
+|*Required/optional*|optional
+|*Accessibility*|RW
+|*Type*|boolean
+|*Description*|
+If this key exists,  the Charge Point supports <<unknown-offline-authorization, Unknown Offline Authorization>>.
+If this key reports a value of _true_, <<unknown-offline-authorization, Unknown Offline Authorization>> is enabled.
+|===
+
+
+[[configkey-local-authorize-offline]]
+==== `LocalAuthorizeOffline`
+
+[cols="1,3"]
+|===
+|*Required/optional*|required
+|*Accessibility*|RW
+|*Type*|boolean
+|*Description*|
+whether the Charge Point, when _offline_, will start a transaction for locally-authorized identifiers.
+|===
+
+[[configkey-local-preauthorize]]
+==== `LocalPreAuthorize`
+
+[cols="1,3"]
+|===
+|*Required/optional*|required
+|*Accessibility*|RW
+|*Type*|boolean
+|*Description*|
+whether the Charge Point, when online, will start a transaction for locally-authorized identifiers without waiting for or requesting an <<authorize.conf,Authorize.conf>> from the Central System
+|===

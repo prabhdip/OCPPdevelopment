@@ -1,0 +1,265 @@
+<<<
+[[UseCases]]
+== <Use cases>
+
+===  UC.XX - Reservation +
+
+Functional block: E. Reservation +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Reservation
+|*2*    | *ID*                     | UC.XX
+|*3*    | *Objective(s)*           | The Central System issues a <<reserve-now,Reserve Now>> operation to the Charge Point to reserve a connector for use by a specific idTag.
+|*4*    | *Description*            | This use case describes how the Charge Point reserves until a certain expiry time for a specific idTag.
+                                     A reservation is released when the reserved idTag is used on the reserved connector (when specified) or on any connector (when unspecified)
+                                     or when the expiry time is reached or when the reservation is explicitly canceled.
+|       | _Actors_                 | Charge Point, Central System
+|       | _Scenario description_   |
+                                      *1.* The Central System issues a <<reservenow.req,ReserveNow.req>> to a Charge Point to
+                                      reserve a connector for use by a specific idTag. +
+                                      *2.* Upon receipt of a <<reservenow.req,ReserveNow.req>> PDU, the Charge Point SHALL respond with a
+                                      <<reservenow.conf,ReserveNow.conf>> PDU. +
+                                      *3.*  If the reservationId does not match any reservation in the Charge Point,
+                                      then the Charge Point SHALL return the status value ‘Accepted’ if it
+                                      succeeds in reserving a connector. +
+                                      *4.* If Charge Point has implemented an Authorization Cache, then upon
+                                      receipt of a <<reservenow.conf,ReserveNow.conf>> PDU the Charge Point SHALL update the
+                                      cache entry.
+
+|       | _Alternative scenarios_   | *1.* Termination of reservation. +
+                                      *2.* Cancel a reservation - The Central System sends an <<cancelreservation.req,CancelReservation.req>>
+                                      PDU to the Charge Point
+                                      to cancel the reservation of a connector. +
+                                      If the Charge Point has a reservation matching the reservationId in the request PDU, it SHALL return
+                                      status ‘Accepted’. Otherwise it SHALL return ‘Rejected’.
+
+|*5*    | *Prerequisites*           |
+                                      *1.* The Profile _Reservation_ is installed.
+                                      *2.* The Charge Point has implemented an Authorization Cache.
+                                      *3.* If the reservationId does not match any reservation in the Charge Point.
+                                      *4.* Refuse charging for all incoming idTags on the reserved connector.
+                                      *5.* A reservation is released when the reserved idTag is used on the reserved connector (when specified) or on any connector (when unspecified)
+                                       or when the expiry time is reached or when the reservation is explicitly canceled.
+
+|*6*    | *Postconditions*          | *Successful postcondition:* +
+                                      The Charge Point is successfully reserved until a certain expiry time for a specific idTag.
+                                      *Failure postcondition:* +
+                                      The Charge Point failed to using the <<reserve-now,Reserve Now>> operation.
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+image:media/ReserveNow.png["Reserve Now",scaledwidth="95%"]
+
+
+[cols="1,2,6",options="noheader",]
+|=======================================================================
+|*8*    | *Error handling*         |
+                                      The Charge Point SHALL return
+                                      ‘Occupied’ if the Charge Point or the specified connector are occupied. +
+                                      The Charge Point SHALL also return ‘Occupied’ when the Charge Point or
+                                      connector has been reserved for the same or another idTag. + The Charge
+                                      Point SHALL return ‘Faulted’ if the Charge Point or the connector are in the
+                                      Faulted state. + The Charge Point SHALL return ‘Unavailable’ if the Charge
+                                      Point or connector are in the Unavailable state. The Charge Point SHALL
+                                      return ‘Rejected’ if it is configured not to accept reservations.
+
+|*9*    | *Remarks*                | It is RECOMMENDED to validate the Identifier with an <<authorize.req,authorize.req>> after reception of a <<reservenow.req,ReserveNow.req>> and before the start of the transaction.
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                         | *ID* | *Requirement definition*                                                               | *M/O/C* | *Rationale*                                                                                  | *Note* |
+| 3.10 | FR      |                                        |      | Reservation of a Charge Point shall be possible using the Reserve Now operation.     | M     | This operation reserves the Charge Point until a certain expiry time for a specific idTag. |      |
+| 3.10 | FR      | With the reservation of a Charge Point. |    | A parent idTag shall be included in the reservation to support ‘group’ reservations. | O     |                                                                                            |      |
+| 5.1  |         |                                                                                                                                                  |    | The Central System shall send an CancelReservation.req PDU to the Charge Point.                                                                                                        | M     | To cancel a reservation.                                         |                                                                                                        |
+| 5.1  |         | If the Charge Point has a reservation matching the reservationId in the request PDU                                                                |    | The Charge Point shall return status ‘Accepted’. Otherwise it shall return ‘Rejected’.                                                                                                 | M     |                                                                  |                                                                                                        |
+| 5.1  |         | _see previous requirement_                                                                                                                              |    | Otherwise, the Charge Point shall return ‘Rejected’.                                                                                                                                   | M     |                                                                  |                                                                                                        |
+| 5.13 |         |                                                                                                                                          |    | The Central System can issue a <<reservenow.req,ReserveNow.req>>to a Charge Point to reserve a connector for use by a specific idTag.                                                                    | C     | To reserve a connector for use by a specific idTag.              |                                                                                                        |
+| 5.13 |         |                                                                                                                                          |    | The Central System shall send a <<reservenow.req,ReserveNow.req>>PDU to a Charge Point.                                                                                                                  | M     |                                                                  |                                                                                                        |
+| 5.13 |         |                                                                                                                                           |    | The Central System MAY specify a connector to be reserved.                                                                                                                             | O     |                                                                  |                                                                                                        |
+| 5.13 |         | Upon receipt of a <<reservenow.req,ReserveNow.req>> PDU.                                                                                                              |    | The Charge Point shall respond with a <<reservenow.req,ReserveNow.req>> PDU.                                                                                                                             | M     |                                                                  |                                                                                                        |
+| 5.13 |         | If the reservationId in the request matches a reservation in the Charge Point.                                                                     |    | The Charge Point shall replace that reservation with the new reservation in the request.                                                                                               | M     |                                                                  |                                                                                                        |
+| 5.13 |         | If the reservationId does not match any reservation in the Charge Point.                                                                           |    | The Charge Point shall return the status value ‘Accepted’ if it succeeds in reserving a connector.                                                                                     | M     |                                                                  |                                                                                                        |
+| 5.13 |         | If the Charge Point or the specified connector are occupied.                                                                                       |    | The Charge Point shall return ‘Occupied’.                                                                                                                                              | M     |                                                                  |                                                                                                        |
+| 5.13 |         | When the Charge Point or connector has been reserved for the same or another idTag.                                                                |    | The Charge Point shall return ‘Occupied’.                                                                                                                                              | M     |                                                                  |                                                                                                        |
+| 5.13 |         | If the Charge Point or the connector are in the Faulted state.                                                                                     |    | The Charge Point shall return ‘Faulted’.                                                                                                                                               | M     |                                                                  |                                                                                                        |
+| 5.13 |         | If the Charge Point or connector are in the Unavailable state                                                                                      |    | The Charge Point shall return ‘Unavailable’.                                                                                                                                           | M     |                                                                  |                                                                                                        |
+| 5.13 | | If it is configured not to accept reservations.                                                                                                    |    | The Charge Point shall return ‘Rejected’.                                                                                                                                              | M     |                                                                  |                                                                                                        |
+| 5.13 | | If the Charge Point accepts the reservation request,                                                                                               |    | The Charge Point shall refuse charging for all incoming idTags on the reserved connector.                                                                                              | M     |                                                                  | Except when the incoming idTag or the parent idTag match the idTag or parent idTag of the reservation. |
+| 5.13 | | When the configuration key: ReserveConnectorZeroSupported is set to true.                                                                          |    | The Charge Point shall support reservations on connector 0.                                                                                                                            | M     |                                                                  |                                                                                                        |
+| 5.13 | | If the Charge Point supports reservations on connect                                                                                               |    | The Charge Point shall NOT reserve a specific connector,                                                                                                                               | N     |                                                                  |                                                                                                        |
+| 5.13 | | _see previous requirement_                                                                                                                              |    | The Charge Point shall  shall make sure that at any time during the validity of the reservation, one connector remains available for the reserved idTag                                | M     |                                                                  |                                                                                                        |
+| 5.13 | | If the configuration key: ReserveConnectorZeroSupported is not set or set to false.                                                                |    | The Charge Point shall return ‘Rejected’                                                                                                                                               | M     |                                                                  |                                                                                                        |
+| 5.13 | | If the parent idTag in the reservation has a value (it is optional).                                                                               |    | The Charge Point MAY look it up in its Local Authorization List or Authorization Cache                                                                                                 | O     |                                                                  |                                                                                                        |
+| 5.13 | | If it is not found in the Local Authorization List or Authorization Cache.                                                                         |    | The Charge Point shall send an Authorize.req for the incoming idTag to the Central System.                                                                                             | M     |                                                                  |                                                                                                        |
+| 5.13 |                                                                                                                                                    |    | The <<Authorize.conf,authorize.conf>> response shall contain the parent-id.                                                                                                                               | M     |                                                                  |                                                                                                        |
+| 5.13 | | A transaction is started for the reserved idTag or parent idTag and on the reserved connector or any connector when the reserved connectorId is 0. |    | The Charge Point shall terminate the reservation.                                                                                                                                      | M     |                                                                  |                                                                                                        |
+| 5.13 | | When the time specified in expiryDate is reached.                                                                                                  |    | The Charge Point shall terminate the reservation.                                                                                                                                      | M     |                                                                  |                                                                                                        |
+| 5.13 | | when the Charge Point or connector are set to Faulted or Unavailable.                                                                              |    | The Charge Point shall terminate the reservation.                                                                                                                                      | M     |                                                                  |                                                                                                        |
+| 5.13 | | If a transaction for the reserved idTag is started.                                                                                                |    | The Charge Point shall send the reservationId in the <<startTransaction.req,StartTransaction.req PDU.                                                                                                         | M     | To notify the Central System that the reservation is terminated. | (see Start Transaction)                                                                                |
+| 5.13 | | When a reservation expires.                                                                                                                        |    | The Charge Point shall terminate the reservation and make the connector available.                                                                                                     | M     |                                                                  |                                                                                                        |
+| 5.13 |                                                                                                                                                    |    | The Charge Point shall send a status notification.                                                                                                                                     | M     |                                                                  |                                                                                                        |
+| 5.13 | | If the Charge Point has implemented an Authorization Cache. Upon receipt of a  <<reservenow.req,ReserveNow.req>> PDU.                                                 |    | The Charge Point shall update the cache entry, if the idTag is not in the Local Authorization List, with the IdTagInfo value from the response as described under Authorization Cache. | M     |                                                                  |                                                                                                        |
+| 5.13 |                                                                                                                                                    |    | The Charge Point shall validate the Identifier with an authorize.req after reception of a ReserveNow.req.                                                                              | O     |                                                                  |                                                                                                        |
+| 5.13 |                                                                                                                                                    |    | The Charge Point shall validate the Identifier with an authorize.req before the start of the transaction.                                                                              | M     |                                                                  |       |      |    | The Charge Point shall validate the Identifier with an authorize.req before the start of the transaction.      | M     |      |
+|=======================================================================
+
+<<<
+[[Messages]]
+== Messages
+
+[[cancelreservation.req]]
+=== CancelReservation.req
+This contains the field definition of the CancelReservation.req PDU sent
+by the Central System to the Charge Point.
+See also <<cancel-reservation>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*reservationId* |integer |1..1 |Required. Id of the reservation to
+cancel.
+|=======================================================================
+
+[[cancelreservation.conf]]
+=== CancelReservation.conf
+This contains the field definition of the CancelReservation.conf PDU
+sent by the Charge Point to the Central System in response to a
+<<cancelreservation.req,CancelReservation.req>> PDU.
+See also <<cancel-reservation>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<cancelreservationstatus,CancelReservationStatus>> |1..1 |Required. This indicates the
+success or failure of the cancelling of a reservation by Central System.
+|=======================================================================
+
+[[reservenow.req]]
+=== ReserveNow.req
+This contains the field definition of the ReserveNow.req PDU sent by the
+Central System to the Charge Point.
+See also <<reserve-now>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*connectorId* a|
+integer
+
+connectorId >= 0
+
+ |1..1 |Required. This contains the id of the connector to be reserved.
+A value of 0 means that the reservation is not for a specific connector.
+
+|*expiryDate* |dateTime |1..1 |Required. This contains the date and
+time when the reservation ends.
+
+|*idTag* |<<idtoken,IdToken>> |1..1 |Required. The identifier for which the Charge
+Point has to reserve a connector.
+
+|*parentIdTag* |<<idtoken,IdToken>> |0..1 |Optional. The parent idTag.
+
+|*reservationId* |integer |1..1 |Required. Unique id for this
+reservation.
+|=======================================================================
+
+[[reservenow.conf]]
+=== ReserveNow.conf
+This contains the field definition of the ReserveNow.conf PDU sent by
+the Charge Point to the Central System in response to a <<reservenow.req,ReserveNow.req>>
+PDU.
+See also <<reserve-now>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<reservationstatus,ReservationStatus>> |1..1 |Required. This indicates the
+success or failure of the reservation.
+|=======================================================================
+
+
+<<<
+[[Data_Types]]
+== DataTypes
+
+[[cancelreservationstatus]]
+=== CancelReservationStatus
+_Enumeration_
+
+Status in <<cancelreservation.conf,CancelReservation.conf>>.
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*Accepted* |Reservation for the identifier has been cancelled.
+
+|*Rejected* |Reservation could not be cancelled, because there is no
+reservation active for the identifier.
+|=======================================================================
+
+[[idtoken]]
+=== IdToken
+_Class_
+
+Contains the identifier to use for authorization. It is a case
+insensitive string. In future releases this may become a complex type to
+support multiple forms of identifiers.
+
+[cols=",,",options="header",]
+|==============================================================
+|*Field Name* |*Field Type* |*Description*
+|*IdToken* |String[20] |Required. IdToken is case insensitive.
+|=====
+
+
+[[reservationstatus]]
+=== ReservationStatus
+_Enumeration_
+
+Status in <<reservenow.conf,ReserveNow.conf>>.
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*Accepted* |Reservation has been made.
+
+|*Faulted* |Reservation has not been made, because connectors or
+specified connector are in a faulted state.
+
+|*Occupied* |Reservation has not been made. All connectors or the
+specified connector are occupied.
+
+|*Rejected* |Reservation has not been made. Charge Point is not configured
+to accept reservations.
+
+|*Unavailable* |Reservation has not been made, because connectors or
+specified connector are in an unavailable state.
+|=====
+
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys
+
+=== Reservation Profile
+
+[[configkey-reserve-connector-zero-supported]]
+==== `ReserveConnectorZeroSupported`
+
+[cols="1,3"]
+|===
+|*Required/optional*|optional
+|*Accessibility*|R
+|*Type*|boolean
+|*Description*|
+If this configuration key is present and set to _true_: Charge Point support
+<<Reservations,reservations>> on connector 0.
+|===

@@ -1,0 +1,363 @@
+:numbered:
+:toc: macro
+
+= Generic Document
+
+Use case based functional description between Charge Point and Central System based on OCPP 1.6.
+
+[cols=","]
+|================================
+|Document Version |0.1
+|Document Status |DRAFT
+|Document Release Date | 2016-01-27
+|================================
+
+
+Copyright © 2010 – 2016 Open Charge Alliance. All rights reserved.
+
+This document is made available under the _*Creative Commons Attribution-NoDerivatives 4.0 International Public License*_ (https://creativecommons.org/licenses/by-nd/4.0/legalcode).
+
+
+*Version History*
+
+[cols="1,2,2,2",options="header",]
+|=======================================================================
+|*Version* |*Date* |*Author* |*Description*
+
+|0.1
+|2016-01-27
+|Jonel Timbergen +
+_ElaadNL_ +
+ +
+Robert de Leeuw +
+_IHomer_ +
+ +
+
+| <Generic Document>
+
+|=======================================================================
+
+<<<
+[[scope]]
+== Scope
+
+This document defines the protocol used between a *Charge Point* and
+**Central System** in use cases. If the protocol requires a certain action or
+response from one side or the other, then this will be stated in this
+document.
+
+The specification does not define the communication technology. Any
+technology will do, as long as it supports TCP/IP connectivity.
+
+For complex systems, the use case methodology supports a common understanding of functionalities,
+_Actors_and processes across different technical committees or even different organizations. Developed
+as software engineering tool, the methodology can be used to support the development of standards as it
+the analysis of requirements in relation to new or existing standards.
+
+<<<
+[[Introduction]]
+== Introduction
+
+
+This is the specification for OCPP version 1.6.
+
+OCPP is a standard open protocol for communication between Charge Points and a Central System
+and is designed to accommodate any type of charging technique.
+
+OCPP 1.6 introduces new features to accommodate the market: Smart Charging, OCPP using JSON over
+Websockets, better diagnostics possibilities (<<reason,Reason>>), more Charge Point <<chargepointstatus,
+Statuses>> and <<trigger-message, TriggerMessage>>. OCPP 1.6 is based on OCPP 1.5, with some new features and
+a lot of textual improvements, clarifications and fixes for all known ambiguities. Due to improvements and new features,
+OCPP 1.6 is not backward compatible with OCPP 1.5.
+
+For a full list of changes, see: <<new-in-ocpp-1-6,New in OCPP 1.6>>.
+
+Some basic concepts are explained in the sections below in this
+introductory chapter. The chapters: <<operations-initiated-by-charge-point,"Operations Initiated by Charge Point">>
+and  <<operations-initiated-by-central-system,"Operations Initiated by Central System">> describe the operations supported
+by the protocol. The exact messages and their parameters are detailed in
+the chapter: <<messages,Messages>> and data types are described in chapter: <<types,Types>>.
+Defined configuration keys are described in the chapter: <<standard-configuration-key-names-values,Standard Configuration Key Names & Values>>.
+
+
+
+<<<
+[[Architecture]]
+== Architecture
+
+
+<insert> /Users/joneltimbergen/Documents/OCPP-development/DataModel
+
+
+
+<<<
+[[Context]]
+== Context
+
+
+=== Actors
+
+
+
+[cols="^1,1,3",options="header",]
+|=======================================================================
+| Actor name          | Actor type | Actor description
+| *User*              | Actor      | The user of a charge point and the electric vehicle.
+| *Connector*         | Subsystem  | The term “Connector”, as used in this specification, refers to an independently operated and managed electrical outlet on a Charge Point. This usually corresponds to a single physical connector, but in some cases a single outlet may have multiple physical socket types and/or types (e.g. four-wheeled EVs and electric scooters).
+| *CPO*               | Actor      | Charge Point Operator
+| *Central System*    | Subsystem  | Charge Point Management System: the central system that manages Charge Points and has the information for authorizing users for using its Charge Points.
+| *Charge Point*      | Device     | The Charge Point is the physical system where an electric vehicle can be charged. A Charge Point has one or more connectors.
+| *Electric Vehicle*  | Device     | Electric vehicle, distributed energy resource with a remote battery and socket.
+|=======================================================================
+
+
+*Primary actors*
+
+* Electric Vehicle
+* Charger
+* ECU
+* HMI
+* Electric Vehicle Supply Equipment
+* Electrize Energy Meter
+* Connector
+* Paying unit
+* HMI
+
+
+*Secondary actors*
+
+* E-mobility Operator Clearing Souse
+* Demand Clearing House
+* Original Equipment Manufacturer
+* Fleet operator
+* E-Mobility Operator
+* Distribution System Operator
+* Meter Operator
+* Electricity provider
+
+''''
+
+Following IEC 62559-2:2015, the actor list contains the following information for each actor:
+
+* Area +
+_Example:_ Smart Grid/energy systems.
+* Mapping to grouping +
+_Example:_ To sort requirements for "smart metering" within the area "energy system".
+* Name of the actor +
+_Example:_ Distribution system operator (DSO).
+* Abbreviation for the actor name +
+_Example:_ DSO.
+* Actor type (e.g. roles, application, ...) +
+_Example:_ DSO is a role, an energy management system (EMS) is an application.
+* Definition of actor +
+Here the actor shall be described. Usually the actor is taken from an existing actor list so that the definition already exists.
+* Possible _Actors_fulfilling this role +
+_Example:_ For the actor “meter operator” it might be a DSO or an independent meter operator, depending on the national background or the specific project.
+* International, regional or national relevance
+_Actors_might differentiate in definition depending on regional or national legislation or markets.
+* Source of the definition +
+_Actors_should be based as far as possible on existing data models in the relevant area or domain.
+_Example:_ Data models like CIM common information model (IEC 61968/61970) or COSEM in the metering domain (IEC 62056).
+* Parent +
+This column is used to build up a kind of hierarchy of actors.
+_Example:_ A grid operator as parent of transmission or distribution system operator (TSO or DSO).
+* Further comments
+
+
+=== Relevant Components
+
+
+<<<
+[[Terminology]]
+== Terminology
+
+
+This section contains the terminology that is used throughout this
+document.
+
+[cols="3,8"]
+|=======================================================================
+|*Central System* |Charge Point Management System: the central system
+that manages Charge Points and has the information for authorizing users
+for using its Charge Points.
+
+|*CiString* | Case Insensitive String. Only printable ASCII allowed.
+
+|*Charge Point* |The Charge Point is the physical system where an
+electric vehicle can be charged. A Charge Point has one or more
+connectors.
+
+|*Charging Profile* | Generic Charging Profile, used for different types of Profiles. Contains information about the Profile and holds the <<chargingschedule,Charging Schedule>>. In future versions of OCPP it might hold more than 1 <<chargingschedule,Charging Schedule>>.
+
+|*Charging Schedule* | Part of a Charging Profile. Defines a block of charging Power or Current limits.
+Can contain a start time and length.
+
+|*Charging Session* |Part of a transaction during which the EV is allowed to request energy
+
+|*Composite Charging Schedule* |The charging schedule as calculated by the Charge Point. It is the result of the calculation of all active schedules and possible local limits present in the Charge Point. Also IEC 15118 limits might be taken into account.
+
+|*Connector* |The term “Connector”, as used in this specification,
+refers to an independently operated and managed electrical outlet on a
+Charge Point. This usually corresponds to a single physical connector,
+but in some cases a single outlet may have multiple physical socket
+types and/or tethered cable/connector arrangements to facilitate
+different vehicle types (e.g. four-wheeled EVs and electric scooters).
+
+|*Control Pilot signal* | signal used by a Charge Point to inform EV
+of maximum Charging power or current limit, as defined by <<ref-IEC61851,[IEC61851-1]>>.
+
+|[[energy-transfer-period]] *Energy Transfer Period* | Time during which an EV chooses to take offered energy, or return it. Multiple Energy Transfer Periods are possible during a Transaction.
+
+|*Local Controller* |Optional device in a smart charging infrastructure. Located on the premises with a number of Charge Points connected to it. Sits between the Charge Points and Central System. Understands and speaks OCPP messages. Controls the Power or Current in other Charge Point by using OCPP smart charging messages. Can be a Charge Point itself.
+|*OCPP-J*| OCPP via JSON over WebSocket
+|*OCPP-S*| OCPP via SOAP
+|*Phase Rotation*| Defines the wiring order of the phases between the energy meter (or if absent, the grid connection), and the Charge Point connector.
+
+|[[transaction]] *Transaction* | The part of the charging process that starts when all relevant preconditions (e.g. authorization, plug inserted) are met, and ends at the moment when the Charge Point irrevocably leaves this state.
+
+|*String* | Case Sensitive String. Only printable ASCII allowed.
+All strings in messages and enumerations are case sensitive, unless
+explicitly stated otherwise.
+|=======================================================================
+
+
+
+[[abbreviations]]
+== Abbreviations
+
+[cols="1,6"]
+|==================================================
+|*CSL* |Comma Separated List
+|*CPO* |Charge Point Operator
+|*DNS* |Domain Name System
+|*DST* |Daylight Saving Time
+|*EV* |Electrical Vehicle
+|*EVSE* |Electric Vehicle Supply Equipment <<ref-IEC61851,[IEC61851-1]>>
+|*FTP(S)* |File Transport Protocol (Secure)
+|*HTTP(S)* |HyperText Transport Protocol (Secure)
+|*ICCID* |Integrated Circuit Card Identifier
+|*IMSI* |International Mobile Subscription Identity
+|*JSON* |Java Simple Object Notation
+|*NAT*| Native Address Translation
+|*PDU* |Protocol Data Unit
+|*SC* |Smart Charging
+|*SOAP* |Simple Object Access Protocol
+|*URL* |Uniform Resource Locator
+|*RST* | 3 phase power connection, Standard Reference Phasing
+|*RTS* | 3 phase power connection, Reversed Reference Phasing
+|*SRT* | 3 phase power connection, Reversed 240 degree rotation
+|*STR* | 3 phase power connection, Standard 120 degree rotation
+|*TRS* | 3 phase power connection, Standard 240 degree rotation
+|*TSR* | 3 phase power connection, Reversed 120 degree rotation
+|*UTC* |Coordinated Universal Time
+|==================================================
+
+
+<<<
+[[GeneralRequirements]]
+== General Requirements
+
+
+
+[cols="1,2,5,1,2,1",options="header",]
+|=======================================================================
+|*ID.*        |*Precondition*        | *Requirement*     | *Rationale*   | *Note*     | *M/O/C*
+|*FR.001*      |                      | The core Profile is implemented                  |                 | | *M*
+|*FR.002*      |                      | The Central System shall be available                  |                |            | *M*
+|*FR.003*      |                      | The Charge Point is configured to communicate with the Central System.                 |                |            | *M*
+|=======================================================================
+
+
+<<<
+[[Security]]
+== Security
+
+
+//COPIED FROM IEC15118
+
+The following goals of applying cryptography to communication are an extract from the Handbook of Applied Cryptography[11] and are repeated here
+ for easier understanding of the cryptographic measures. For further information, see http://cacr.uwaterloo.ca/hac/ +
+
+*1. Confidentiality* is a service used to keep the content of information from all but those authorized to have it. Secrecy is a term synonymous with
+confidentiality and privacy. There are numerous approaches to providing confidentiality, ranging from physical protection to mathematical algorithms,
+which render data unintelligible. +
+
+*2. Data integrity* is a service that addresses the unauthorized alteration of data. To assure data integrity, one must have the ability to detect data
+manipulation by unauthorized parties. Data manipulation includes such things as insertion, deletion, and substitution. +
+
+*3. Authentication* is a service related to identification. This function applies to both entities and information itself. Two parties entering into a
+communication should identify each other. Information delivered over a channel should be authenticated as to origin, date of origin, data content, time
+sent, etc. For these reasons, this aspect of cryptography is usually subdivided into two major classes: entity authentication and data origin authentication.
+Data origin authentication implicitly provides data integrity (for if a message is modified, the source has changed). +
+*4. Non-repudiation* is a service that prevents an entity from denying previous commitments or actions. When disputes arise due to an entity denying that certain
+actions were taken, a means to resolve the situation is required. For example, one entity may authorize the purchase of property by another entity and later deny
+such authorization was granted. A procedure involving a trusted third party is needed to resolve the dispute. “Accountability” as used in B.1 is equivalent to the
+term “non-repudiation”.
+
+An additional goal regarding the data communication is defined below.
+*1. Reliability / Availability* is the property of a service of being available and working reliably. Degradation of availability and/or communication reliability potentially compromises an offered service.
+
+<<<
+[[GenericDataTypes]]
+== Generic Data Types
+
+
+[[cistring20type]]
+=== CiString20Type
+_Class_
+
+Generic used case insensitive string of 20 characters.
+
+[cols=",,",options="header",]
+|===============================================
+|*Field Name* |*Field Type* |*Description*
+|*cistring20* |CiString[20] |String is case insensitive.
+|===============================================
+
+[[cistring25type]]
+=== CiString25Type
+_Class_
+
+Generic used case insensitive string of 25 characters.
+
+[cols=",,",options="header",]
+|===============================================
+|*Field Name* |*Field Type* |*Description*
+|*cistring25* |CiString[25] |String is case insensitive.
+|===============================================
+
+[[cistring50type]]
+=== CiString50Type
+_Class_
+
+Generic used case insensitive string of 50 characters.
+
+[cols=",,",options="header",]
+|===============================================
+|*Field Name* |*Field Type* |*Description*
+|*ciString50* |CiString[50] |String is case insensitive.
+|===============================================
+
+[[cistring255type]]
+=== CiString255Type
+_Class_
+
+Generic used case insensitive string of 255 characters.
+
+[cols=",,",options="header",]
+|===============================================
+|*Field Name* |*Field Type* |*Description*
+|*cistring255* |CiString[255] |String is case insensitive.
+|===============================================
+
+[[cistring500type]]
+=== CiString500Type
+_Class_
+
+Generic used case insensitive string of 500 characters.
+
+[cols=",,",options="header",]
+|===============================================
+|*Field Name* |*Field Type* |*Description*
+|*ciString500* |CiString[500] |String is case insensitive.
+|===============================================

@@ -1,0 +1,30 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Clear Charging Profile
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+  activate CS
+  CS -> CP: ClearChargingProfile.req()
+  activate CP
+
+  alt
+  CP --> CS: SetChargingProfile.conf(not supported)
+  end
+
+
+  alt
+  CP ->o CS: SetChargingProfile.conf(rejected)
+  end
+
+  alt
+  CP ->o CS: SetChargingProfile.conf(unknown)
+  end
+  deactivate CP
+  deactivate CS
+
+
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Data Transfer
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CP -> CS: DataTransfer.req(vendorId, [messageId], [data])
+activate CP
+activate CS
+CS --> CP: DataTransfer.conf(status, [data])
+
+deactivate CS
+deactivate CP
+@enduml

@@ -1,0 +1,99 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Smart Charging Transaction
+
+actor "User" as US
+actor "EV" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+opt
+CP -> CS : SetChargingProfile.req(connector, limit, purpose)
+CS --> CP : SetChargingProfile.conf()
+end
+
+note right: SetChargingProfile with profile purpose\nTxDefaultProfile or ChargePointMaxProfile
+
+
+note over USR, CS: RFID or other Authorization
+
+CP -> EV: PWM set max current(limit)
+activate CP
+
+CP -> CP: switch power on()
+EV -> CP: start charging()
+activate EV
+deactivate CP
+CP -> CS: StartTransaction.req(connectorId, idTag, meterStart, timestamp, [reservationId])
+activate CP
+activate CS
+CS --> CP: StartTransaction.conf(idTagInfo, transactionId)
+deactivate CS
+
+group loop Change according to charging profile
+  else for each interval period in charging profile
+  CP -> CP: get limit from charging\nprofile():limit
+  CP -> EV: PWN set max current(limit)
+  deactivate CP
+
+  opt Change of limits by Central System
+    CS -> CP: SetChargingProfile.req(Connector, limit)
+    activate CP
+    note right of CS
+      Central System decides to
+      change the charging profile.
+    end note
+    activate CS
+    CP --> CS: SetChargingProfile.conf(OK)
+    deactivate CP
+    deactivate CS
+  end
+
+  opt if limit = 0
+    CS -> CP: StatusNotification.req(Status = SuspendedEVSE)
+    activate CP
+    activate CS
+    CP --> CS: StatusNotification.conf()
+    deactivate CP
+    deactivate CS
+  end
+
+  opt if EV indicates no power needed
+    CS -> CP: StatusNotification.req(Status = SuspendedEV)
+    activate CP
+    activate CS
+    CP --> CS: StatusNotification.conf()
+    deactivate CP
+    deactivate CS
+  end
+
+  opt if charging is resumed
+    CS -> CP: StatusNotification.req(Status = Charging)
+    activate CP
+    activate CS
+    CP --> CS: StatusNotification.conf()
+    deactivate CP
+    deactivate CS
+  end
+
+end
+
+
+note over USR, CS: RFID or other Authorization
+CP -> CP: switch power off()
+CP -> CS: StopTransaction.req()
+activate CP
+activate CS
+CS --> CP: StopTransaction.conf()
+
+CS --> ET: optional notification
+deactivate CP
+CP ->o] : End regular charging session
+deactivate CS
+
+
+
+
+@enduml

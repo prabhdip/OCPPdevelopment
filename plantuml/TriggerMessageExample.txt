@@ -1,0 +1,25 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Trigger Message (Example)
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CS -> CP: TriggerMessage.req(**RequestedMessage: StatusNotification**, **ConnectorId: 1**)
+activate CS
+activate CP
+CP --> CS: TriggerMessage.conf(Status: Accepted)
+
+deactivate CS
+deactivate CP
+
+CP -> CS: StatusNotification.req(ConnectorId: 1, errorCode: NoError, Status: Charging)
+activate CP
+activate CS
+CS --> CP: StatusNotification.conf()
+
+deactivate CP
+deactivate CS
+@enduml

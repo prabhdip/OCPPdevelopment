@@ -1,0 +1,40 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Fault Behaviour\n\n The definition of a "fatal" hardware fault is that it makes charging impossible.\n\nAn example of resolving a hardware fault can be the temperature that is going down, in case of a "HighTemperature" fault.
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+activate CP
+CP ->o CP : Hardware fault
+deactivate CP
+
+alt if fatail hardware fault detected
+CP -> CS : StatusNotification.req(status = Faulted)
+activate CP
+CS --> CP : StatusNotificaton.conf()
+deactivate CP
+end
+
+alt if non fatal hardware fault detected
+CP -> CS : StatusNotification.req(errorCode = x)
+activate CP
+CS --> CP : StatusNotificaton.conf()
+deactivate CP
+end
+
+CP ->o CP : Hardware fault resolved()
+activate CP
+opt if hardware fault resolved
+CP -> CS : StatusNotification.req()
+
+CS --> CP : StatusNotificaton.conf()
+deactivate CP
+end
+
+
+
+
+@enduml

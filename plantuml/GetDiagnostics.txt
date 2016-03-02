@@ -1,0 +1,47 @@
+@startuml
+'skinparam dpi 600
+hide footbox
+
+title Get Diagnostics
+
+actor "CPO" as CPO
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+CPO -> CS:  Get diagnostics()
+activate CS
+CS  -> CP:  getDiagnostics.req()
+activate CP
+CP  -> CS:  getDiagnostics.conf()
+deactivate CP
+CS -->o CPO: optional notification()
+deactivate CS
+
+CS  -> CP:  DiagnosticsStatusNotification.req.req(status = Uploading)
+activate CS
+activate CP
+CP  -> CS:  DiagnosticsStatusNotification.req.conf(Accepted)
+deactivate CS
+deactivate CP
+
+
+note over CP
+Uploading..
+end note
+
+
+CS  -> CP:  DiagnosticsStatusNotification.req.req(status = Uploaded)
+activate CS
+activate CP
+CP  -> CS:  getDiagnostics.conf(Accepted)
+
+
+
+CS -->o CPO: optional notification()
+deactivate CS
+deactivate CP
+
+
+
+@enduml

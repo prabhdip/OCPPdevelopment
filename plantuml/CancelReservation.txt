@@ -1,0 +1,27 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Change Reservation
+
+actor "EV user" as EV
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+EV o-> CS: cancel reservation()
+activate CS
+CS -> CP: CancelReservation.req()
+
+CP --> CS: CancelReservation.conf()
+deactivate CS
+deactivate CP
+
+
+CP -> CS: StatusNotification.req (status = Available)
+activate CP
+CS --> CP: StatusNotfification.conf()
+deactivate CP
+
+
+@enduml

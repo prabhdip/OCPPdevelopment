@@ -1,0 +1,62 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Smart Charging (central smart charging)
+
+actor "User" as USR
+participant "EV" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+note over USR, CS: RFID or other Authorization
+
+CP -> EV: set max current(limit)
+activate CP
+
+CP -> CP: switch power on()
+EV -> CP: start charging()
+activate EV
+deactivate CP
+CP -> CS: StartTransaction.req(connectorId, idTag, meterStart, timestamp, [reservationId])
+activate CP
+activate CS
+CS --> CP: StartTransaction.conf(idTagInfo, transactionId)
+deactivate CS
+
+group loop Change according to charging profile
+  else for each interval period in charging profile
+  CP -> CP: get limit from charging profile():limit
+  note right
+    Charge Point implements charging
+    profile via the Control Pilot
+    signal whenever maximum current
+    needs changing.
+  end note
+  CP -> EV: set max current(limit)
+  deactivate CP
+
+  opt Change of limits by Central System
+    CS -> CP: SetChargingProfile.req(ConnectorId, ChargingProfileId, [transactionId],\n **ChargingProfilePurpose: TxProfile**, ChargingProfileType, recurrencyKind, ValidFrom,\n ValidTo, ChargingSchedule)
+    activate CP
+    note right of CS
+      Central System decides to
+      change the charging profile.
+    end note
+    activate CS
+    CP --> CS: SetChargingProfile.conf(Accepted)
+    deactivate CP
+    deactivate CS
+  end
+end
+note over USR, CS: RFID or other Authorization
+CP --> EV: end charging()
+CP -> CP: switch power off()
+CP -> CS: StopTransaction.req(meterStop, timestamp,\n transactionId, reason, [idTag], [transactionData])
+activate CP
+activate CS
+CS --> CP: StopTransaction.conf([idTagInfo])
+deactivate CP
+deactivate CS
+
+@enduml

@@ -1,0 +1,159 @@
+<<<
+[[UseCases]]
+== Change Availability
+
+===  UC.03 - Change Availability +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Change Availability
+|       | _Functional Block_       | A. Provisioning
+|*2*    | *ID*                     | UC.03
+|*3*    | *Objective(s)*           | To change to Charge Points' availability.
+|*4*    | *Description*            | This use case covers how the Central System requests the Charge Point to change its availability. +
+                                     A Charge Point is considered available (“operative”) when it is charging or
+                                     ready for charging. A Charge Point is considered _Unavailable_ when it does
+                                     not allow any charging.
+|       | _Actors_                 | Charge Point, Central System
+|       | _Scenario description_   |
+                                     *1.* The Central System sends a <<changeavailability.req,ChangeAvailability.req>> PDU for requesting a
+                                     Charge Point to change its availability.  +
+                                     *2.* The Central System changes the availability to _Available_ or _Unavailable_. +
+                                     *3*. Upon receipt of a <<changeavailability.req,ChangeAvailability.req>> PDU, the Charge Point
+                                     responds with a <<changeavailability.conf,ChangeAvailability.conf>> PDU. Status is defined. +
+|       | _Alternative scenarios_  |
+                                     *1.* When a transaction is in progress the Charge Point responds with availability status _Scheduled_ to
+                                     indicate that it is scheduled to occur after the transaction has finished. +
+                                     *2.* In the event that the Central System requests Charge Point to change to a
+                                     status it is already in, the Charge Point responds with availability status _Accepted_.
+|*5*    | *Prerequisites*          | The Central System is able to the change the availability of the Charge Point _Available_ or _Unavailable_.
+|*6*    | *Postconditions*         | *Successful postcondition:* +
+                                     The Central System was able to change the Charge Point's availability. +
+                                     *Failure postcondition:* The Central System was _not_ able to change the requested availability.
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+image:media/ChangeAvailability.png[Change Availability,scaledwidth="95%"]
+
+[cols="1,2,6",options="header",]
+|=======================================================================
+|*8*    | *Error handling*         | Persistent states: for example: Connector set to _Una  vailable__ shall persist a reboot.
+|*9*    | *Remarks*                | When an availability change requested with a <<changeavailability.req,ChangeAvailability.req>> PDU
+                                     has happened, the Charge Point SHALL inform Central System of its new availability
+                                     status with a <<statusnotification.req,StatusNotification.req>> as described
+                                     there. +
+                                     In the case the <<changeavailability.req, ChangeAvailability.req>> contains ConnectorId = 0, the status change
+                                     applies to the Charge Point and all Connectors. +
+                                     Persistent states: for example: Connector set to _Unavailable_ shall persist a reboot.
+|*10*   | *Test cases*             | <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+=== UC.03 - Availability States +
+
+[width="100%", cols=",",options="noheader"]
+|=======================================================================
+||
+|{set:cellbgcolor:lightgreen} *H1*|{set:cellbgcolor:lightgrey} Connector is set _Available_ by a <<change-availability,Change Availability>> message
+|{set:cellbgcolor:lightgreen} *H2*|{set:cellbgcolor:lightgrey} Connector is set _Available_ after a user had interacted with the Charge Point
+|{set:cellbgcolor:lightgreen} *H3*|{set:cellbgcolor:lightgrey} Connector is set _Available_ and no user action is required to start charging
+|{set:cellbgcolor:lightgreen} *H4*|{set:cellbgcolor:lightgrey} Similar to `H3` but the EV does not start charging
+|{set:cellbgcolor:lightgreen} *H5*|{set:cellbgcolor:lightgrey} Similar to `H3` but the EVSE does not allow charging
+|{set:cellbgcolor:lightgreen} *H9*|{set:cellbgcolor:lightgrey} A fault is detected that prevents further charging operations
+||
+|=======================================================================
+
+=== UC.03 - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  |*FR/NF/C* | *Precondition*  | *ID* | *Requirement definition*    | *M/O/C* | *Rationale*                                                                                                             | *Note*
+| 5.2 | FR |   |  | The Central System shall  be able to request a Charge Point to change its availability.                                                                                                                                        | M |   | A Charge Point is considered _Unavailable_ when it does not allow any charging.
+| 5.2 | FR |                                                                                                |  FR.03.001 | The Central System shall send a <<changeavailability.req, ChangeAvailability.req>> PDU for requesting a Charge Point to change its availability. | M |   |
+| 5.2 | FR | Upon receipt of a <<changeavailability.req,ChangeAvailability.req>> PDU.                                                  |  FR.03.002 | The Charge Point shall respond with a ChangeAvailability.conf PDU.                                                   | M |   |
+| 5.2 | FR |                                                                                                | FR.03.003  | The response PDU shall indicate whether the Charge Point is able to change to the requested availability or not      | M |   |
+| 5.2 | FR | When a transaction is in progress                                                              |  FR.03.004 | The Charge Point shall respond with availability status _Scheduled_.                                                 | M |   |
+| 5.2 | FR | In the event that Central System requests Charge Point to change to a status it is already in, | FR.03.005  | The Charge Point shall respond with availability status _Accepted_.                                                  | M |   |
+| 5.2 | FR | When an availability change requested with a  <<changeavailability.req,ChangeAvailability.req>>  PDU has happened. | FR.03.005   | The Charge Point shall inform Central System of its new availability status with a <<StatusNotification.req, StatusNotification.req>> as described there. | M |   |
+| 5.2 | FR | In the case the  <<changeavailability.req,ChangeAvailability.req>> contains ConnectorId = 0 | FR.03.006 | The Charge Point' status change shall apply to the Charge Point and all Connectors. | M |   | Persistent states: for example: Connector set to _Unavailable_ shall persist a reboot.
+|=======================================================================
+
+
+<<<
+[[Messages]]
+== Messages
+
+[[changeavailability.req]]
+=== ChangeAvailability.req
+This contains the field definition of the ChangeAvailability.req PDU
+sent by the Central System to the Charge Point.
+See also <<change-availability>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*connectorId*|integer connectorId >= 0
+
+ |1..1 |Required. The id of the connector for which availability needs
+to change. Id '0' (zero) is used if the availability of the Charge Point and all its connectors needs to change.
+
+|*type* |<<availabilitytype,AvailabilityType>> |1..1 |Required. This contains the type of
+availability change that the Charge Point should perform.
+|=======================================================================
+
+[[changeavailability.conf]]
+=== ChangeAvailability.conf
+This contains the field definition of the ChangeAvailability.conf PDU
+return by Charge Point to Central System.
+See also <<change-availability>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<availabilitystatus,AvailabilityStatus>> |1..1 |Required. This indicates whether
+the Charge Point is able to perform the availability change.
+|=======================================================================
+
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+[[availabilitystatus]]
+=== AvailabilityStatus
+_Enumeration_
+
+Status returned in response to
+<<changeavailability.req,ChangeAvailability.req>>.
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*Accepted* |Request has been accepted and will be executed.
+
+|*Rejected* |Request has not been accepted and will not be executed.
+
+|*Scheduled* |Request has been accepted and will be executed when
+transaction(s) in progress have finished.
+|=======================================================================
+
+[[availabilitytype]]
+=== AvailabilityType
+_Enumeration_
+
+Requested availability change in
+<<changeavailability.req,ChangeAvailability.req>>.
+
+[cols=",",options="header",]
+|==========================================================
+|*Value* |*Description*
+|*Inoperative* |Charge point is not available for charging.
+|*Operative* |Charge point is available for charging.
+|==========================================================
+
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys
+
+No fields are defined.

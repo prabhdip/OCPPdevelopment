@@ -1,0 +1,46 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Reset Without Running Transaction
+
+actor "CPO" as CPO
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+CPO -> CS: reset()
+activate CS
+CS  -> CP: Reset.req()
+|||
+activate CP
+
+
+CP  --> CS: Reset.conf()
+deactivate CS
+deactivate CP
+CS --> CPO: optional notification()
+
+alt if soft reset
+
+    activate CP
+    CP --> CP: restart\napplication()
+    deactivate CP
+  end
+
+
+alt if hard reset
+
+    activate CP
+    CP --> CP: rebootn()
+    deactivate CP
+CP ->o]: cold boot Charge Point
+  end
+
+
+
+
+note over CP: Please note that a boot charge point means that the Connectors return\nto the status prior to the reboot if the status was specifically set from\n the backoffice.
+
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+ 
+CP -> CS: StopTransaction.req(meterStop, timestamp,\n transactionId, reason, [idTag], [transactionData])
+activate CP
+activate CS
+CS --> CP: StopTransaction.conf([idTagInfo])
+
+deactivate CS
+deactivate CP
+@enduml

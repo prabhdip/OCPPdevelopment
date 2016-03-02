@@ -1,0 +1,117 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Regular Transaction EV side disconnect\n\nPrecondition: Charging session running.\n
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+EV -> CP : unplug cable at car side
+
+alt if StopTransactionOnEVSideDisconnected = true
+
+CP ->o CP : suspend EnergyOffer()
+
+alt if UnlockConnectorOnEVSideDisconnect = true
+alt if cable not permanently attached
+CP ->o CP : unlock connector()
+end
+end
+
+CP -> CS : StatusNotification.req(status = Finishing)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+
+
+CP -> CS : StartTransaction.req(reason = EVDisconnnected)
+activate CS
+CS --> CP : StartTransaction.conf()
+deactivate CS
+
+
+opt if UnlockConnectorOnEVSideDisconnect = false & cable not permanently attached
+EV -> CP : present identification()
+CP ->o CP : unlock connector()
+end
+
+
+
+
+
+EV -> CP : Unplug cable()
+
+CP -> CS : StatusNotification.req(status = Available)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+
+
+CP ->o CP : return to Idle state
+end
+
+
+alt if StopTransactionOnEVSideDisconnected = false
+CP ->o CP : suspend EnergyOffer()
+
+CP -> CS : StatusNotification.req(status = SuspendedEVSE, info = EV side disconnected)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+note right :  StopTransactionONEVSideDisconnected = false\n& UnlockConnectorOnEVSideDisconnect =\ntrue is not allowed
+
+alt
+EV -> CP : present identification()
+opt if not equal to parent identification
+CP -> CS : Authorize.req()
+activate CS
+CS --> CP : Authorize.conf()
+deactivate CS
+end
+
+CP -> CP : unlock connector()
+
+CP -> CS : StatusNotification.req(status = Finishing)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+
+CP -> CS : StopTransaction.req()
+activate CS
+CS --> CP : StopTransaction.conf()
+deactivate CS
+
+opt if cable not permanently attached
+EV -> CP : Unplug cable()
+|||
+activate CP
+end
+
+
+CP -> CS : StatusNotification.req(status = Available)
+CS --> CP : StatusNotification.conf()
+
+CP ->o CP : return to Idle state
+|||
+deactivate CP
+end
+alt
+EV -> CP : Plugin cable()
+activate CP
+
+CP -> CS : StatusNotification.req(Charging)
+CS --> CP : StatusNotification.conf()
+
+CP -> CP : resume EnergyOffer()
+deactivate CP
+CP ->o] : Resume regular charging session
+
+end
+end
+@enduml

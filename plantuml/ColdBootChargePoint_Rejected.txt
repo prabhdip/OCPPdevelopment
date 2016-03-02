@@ -1,0 +1,26 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Cold Boot Charge Point (rejected)
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+activate CP
+CP  -> CS:  BootNotification.req()
+activate CS
+CS  --> CP:  BootNotification.conf(status = Rejected, interval = x)
+deactivate CS
+
+loop with interval X while "Rejected"
+  CP  -> CS:  BootNotification.req()
+  activate CS
+  CS  --> CP:  BootNotification.conf(status = Rejected, interval = x)
+  deactivate CS
+end
+
+
+deactivate CP
+
+@enduml

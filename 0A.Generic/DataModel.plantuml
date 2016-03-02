@@ -1,0 +1,108 @@
+d@startuml
+
+title  <b>{draft] Data Model OCPP</b>
+
+
+
+      object CentralSystem {
+      url
+      }
+
+      object ChargePoint {
+      url
+      iccid
+      ismi
+      pointSerialNumer
+      boxSerialNumber
+      model
+      vendor
+      vendorimplementationId
+      }
+
+      object LocalCache {
+      listVersion
+      }
+
+
+      object Meter {
+      serialNumber
+      type
+      }
+
+      object Connector {
+      connectorId
+      status
+      }
+
+
+      object Diagnostics {
+      startTime
+      stopTime
+      targetLocation
+      uploadRetries
+      uploadRetryInterval
+      status
+      }
+
+      object Firmware {
+      installedVersion
+      newVersionSourceLocation
+      newVersionRetrieveDate
+      newVersionDownloadRetries
+      newVersinoDownloadRetryInterval
+      newVersonStatus
+      }
+
+      object User {
+      idTag
+      expiryDate
+      status
+      }
+
+      object Transaction {
+      transactionId
+      meterStart
+      timestampStart
+      meterStop
+      timestampStop
+      }
+
+      object Reservation {
+      reservationId
+      expiryData
+      status
+      }
+
+
+      object MeterValue {
+      timestamp
+      value
+      measurand
+      context
+      location
+      unit
+      format
+      }
+
+''''''''''''''''''''''''''''''''''''
+
+ChargePoint *-left- "1" LocalCache
+
+
+CentralSystem "1" *-down- ChargePoint
+ChargePoint *--down- Connector
+ChargePoint *--down- "main_meter" Meter
+
+ChargePoint "1" *-right-  "1" Firmware
+ChargePoint "1" *-right- "1" Diagnostics
+
+MeterValue *-up- "1" Meter
+Transaction *-up- "1" Connector
+Connector "0..1" *- "1" Meter
+CentralSystem *--left- "0..1" User
+
+Transaction *-left- Reservation
+
+Transaction "0..1" -right- MeterValue
+
+@enduml

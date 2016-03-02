@@ -1,0 +1,72 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Smart Charging (local smart charging)
+
+actor "User" as USR
+participant "EV" as EV
+participant "Charge Point" as CP
+participant "Local Controller" as LC
+participant "Central System" as CS
+
+note over USR, CS: RFID or other Authorization
+
+CP -> EV: set max current(limit)
+activate CP
+
+CP -> CP: switch power on()
+EV -> CP: start charging()
+activate EV
+CP -> LC: StartTransaction.req(connectorId, idTag, meterStart,\n timestamp, [reservationId])
+activate LC
+LC -> CS: StartTransaction.req(connectorId, idTag, meterStart,\n timestamp, [reservationId])
+activate CS
+CS --> LC: StartTransaction.conf(idTagInfo, transactionId)
+deactivate CS
+LC --> CP: StartTransaction.conf(idTagInfo, transactionId)
+deactivate LC
+
+group loop Change according to charging profile
+else for each interval period in charging profile
+  CP -> CP: get limit from charging profile():limit
+  note right
+    Charge Point implements charging 
+    profile via the Control Pilot 
+    signal whenever maximum current 
+    needs changing.
+  end note
+  CP -> EV: set max current(limit)
+  deactivate CP
+
+  opt Change of limits by controller
+    LC -> CP: SetChargingProfile.req(connectorId, csChargingProfiles)
+    note right
+      Local Controller decides to 
+      change the charging profile.
+    end note
+
+    activate CP
+    activate LC
+    CP --> LC: SetChargingProfile.conf(Accepted)
+    deactivate CP
+    deactivate LC
+  end
+end
+
+note over USR, CS: RFID or other Authorization
+
+CP --> EV: end charging()
+CP -> CP: switch power off()
+CP -> LC: StopTransaction.req(meterStop, timestamp,\n transactionId, reason, [idTag], [transactionData])
+activate CP
+activate LC
+LC -> CS: StopTransaction.req(meterStop, timestamp,\n transactionId, reason, [idTag], [transactionData])
+activate CS
+CS --> LC: StopTransaction.conf([idTagInfo])
+deactivate CS
+LC --> CP: StopTransaction.conf([idTagInfo])
+deactivate LC
+deactivate CP
+
+@enduml

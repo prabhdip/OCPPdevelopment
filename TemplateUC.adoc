@@ -1,0 +1,52 @@
+<<<
+[[UseCases]]
+== <Use cases>
+
+
+Functional Block:
+
+===  UC.XX - Cold Boot Charge Point +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  |
+|*2*    | *ID*                     |
+|*3*    | *Objective(s)*           |
+|*4*    | *Description*            |
+|       | _Actors_                 |
+|       | _Scenario description_   |
+|       | _Alternative scenarios_  |
+|*5*    | *Prerequisites*          |
+|*6*    | *Postconditions*         |
+|*7*    | *Sequence diagram*       |
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                |
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+|*ID.*       |*Precondition*        | *Requirement*                            | *M/O/C*
+|*FR.01.XXX* |                      |                                          |
+|*FR.01.XXX* |                      |                                          |
+|=======================================================================
+
+<insert Sequence diagram>
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys

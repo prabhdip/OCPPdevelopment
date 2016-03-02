@@ -1,0 +1,69 @@
+<<<
+[[UseCases]]
+== Use cases
+
+
+===  UC.XX - Offline Authorization through Local Authorization List
+
+Functional Block: D. Authentication
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Offline Authorization through Local Authorization List
+|*2*    | *ID*                     | Sub use case to offline behavior
+|*3*    | *Objective(s)*           | To authorize an identifier by using the Local Authorization List.
+|*4*    | *Description*            | This use cases describes the possibility to authorize a user while
+                                    communication with the Central System or the Charge Point is not possible.
+                                    The Local Authorization List is a list of identifiers that can be synchronized
+                                     with the Central System. The list contains the authorization status of all
+                                     (or a selection of) identifiers and the authorization status/expiration date.
+|       | _Actors_                 | EV user, Charge Point, Central System
+|       | _Scenario description_   |
+                                      *1.* The Charge Point is _offline_ and no communication with the Central System is possible. +
+                                      *2.* The user needs to be identified through the usage of the Local Authorization List of the
+                                      Charge Point. +
+                                      *3.* A Charge Point that supports Local Authorization List SHOULD implement the configuration key:
+                                      <<configkey-local-auth-list-max-length,`LocalAuthListMaxLength`>> This gives the Central System a
+                                      way to known the the maximum possible number of Local Authorization List elements in a Charge Point. +
+                                      *4.* The Charge Point indicates whether the Local Authorization List is supported by the presence or
+                                      absence of the `LocalAuthListManagement` element in the value of the <<configkey-supported-feature-profiles,
+                                      `SupportedFeatureProfiles`>> configuration key. Whether the Local Authorization List is enabled is reported
+                                      and controlled by the  <<configkey-local-auth-list-enabled, `LocalAuthListEnabled`>> configuration key. +
+                                      *5.* The Central System synchronizes this list by either: +
+                                       a. sending a complete list of identifiers to replace the Local Authorization
+                                      List or: +
+                                       b. by sending a list of changes (add, update, delete) to apply
+                                      to the Local Authorization List. The operations to support this are
+                                      <<get-local-list-version,Get Local List Version>> and
+                                      <<send-local-list,Send Local List>>.
+|       | _Alternative scenarios_  |
+|*5*    | *Prerequisites*          | While _Offline_
+|*6*    | *Postconditions*          | *Successful postcondition:*  +
+                                      When the authorization status in the <<starttransaction.conf>> is _Accepted_ +
+                                      *Failure postcondition:* +
+                                      When the authorization status in the <<starttransaction.conf>> is _not Accepted_.
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+image:media/OfflineAuthorizationthroughLocalAuthorizationList.png["Offline Authorization through Local Authorization List",scaledwidth="95%"]
+
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+
+
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                | *[NOTE]* +
+                                    Conflicts between the local authorization list and the validity reported in, for instance, a <<starttransaction.conf, StartTransaction.conf>>
+                                    message might occur. When this happens the Charge Point SHALL inform the Central System by sending a <<status-notification, StatusNotification>> with
+                                     ConnectorId set to 0, and ErrorCode set to 'LocalListConflict'. +
+                                    The Authorization Cache and Local Authorization List are distinct logical data structures. Identifiers known in the Local Authorization List SHALL NOT
+                                    be added to the Authorization Cache.
+                                    Where both Authorization Cache and Local Authorization List are supported, a Charge Point SHALL treat Local Authorization List entries as having priority
+                                    over Authorization Cache entries for the same identifiers.
+
+
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+
+|=======================================================================

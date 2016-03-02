@@ -1,0 +1,139 @@
+<<<
+[[UseCases]]
+== Use cases
+
+===  UC.XX - Unlock Connector (With Transaction) +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Unlock connector (transaction)
+|       | _Functional Block_       | C. Remote Commands
+|*2*    | *ID*                     | UC.XX
+|*3*    | *Objective(s)*           | *1.* To  (remotely)unlock a connector of a Charge Point. +
+                                     *2.* To help EV drivers that have problems unplugging
+                                      their cable from the Charge Point in case of malfunction of the Connector cable retention.
+|*4*    | *Description*            | This use case covers how the Central System requests the Charge Point to unlock the connector.
+|       | _Actors_                 | External Trigger, Charge Point, Central System
+|       | _Scenario description_   |
+                                     *1.* The Central System  requests a Charge Point to unlock a connector.
+                                     To do so, the Charge Point SHALL send an
+                                     <<unlockconnector.req,UnlockConnector.req>> PDU. +
+                                     *2.* Upon receipt of an <<unlockconnector.req,UnlockConnector.req>> PDU, the Charge Point responds with a <<unlockconnector.conf,UnlockConnector.conf>> PDU. +
+                                     *3.* The response PDU indicates whether the Charge Point was able to unlock its connector. +
+                                     *4.*  If there was a transaction in progress on the specific connector, then
+                                     Charge Point SHALL finish the transaction first as described in
+                                     <<stop-transaction,Stop Transaction>>.
+|       | _Alternative scenarios_  | *1.* Unlock connector with/without running transaction. (link to relevant use case)
+|*5*    | *Prerequisites*          |
+|*6*    | *Postconditions*         | **Successful postcondition:**
+                                     *Failure postcondition:*
+|*7*    | *Sequence diagram*       |
+|*8*    | *Error handling*         |
+                                      *1.* Unlock connector - not supported
+                                      *2.* Unlock connector - unlock failure
+                                      *3.* Unlock connector - unknown connector
+|*9*    | *Remarks*                |
+                                      IMPORTANT: <<unlockconnector.req,UnlockConnector.req>> is intented only for unlocking the cable retention lock on the Connector, not for unlocking a connector access door.
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                                                               | *ID* | *Requirement definition*                                                                                                                                                          | *M/O/C* | *Rationale* | *Note*
+| 4.10 | NF      |                                                                         |    | The optional TransactionData element is a container for any number of MeterValues, using the same data structure as the meterValue elements of the MeterValues.req PDU | O     |                                                                                                                               |
+| 4.10 | FR      |                                                                         |    | The Central System only inform the Charge Point it has received the StopTransaction.req                                                                                | O     |                                                                                                                               |
+| 4.10 | FR      |                                                                         |    | The Central System shall send information about the idTag used to stop the transaction.                                                                                | O     |                                                                                                                               |
+| 4.10 | FR      |                                                                         |    | This information SHOULD be used to update the Authorization Cache, if implemented.                                                                                     | C     |                                                                                                                               |
+| 4.10 | FR      |                                                                         |    | The idTag in the request PDU shall be omitted when the Charge Point itself needs to stop the transaction.                                                              | O     |                                                                                                                               |
+| 4.10 | FR      | If the transaction is not ended normally.                               |    | The Reason element shall be omitted.                                                                                                                                   | M     |                                                                                                                               |
+| 4.10 | FR      |                                                                         |    | The Reason SHOULD be assumed 'Local'.                                                                                                                                  | C     |                                                                                                                               |
+| 4.10 | FR      | If the transaction is not ended normally.                               |    | The Reason SHOULD be set to a correct value.                                                                                                                           | C     |                                                                                                                               |
+| 4.10 | FR      | As part of the normal transaction termination.                          |    | The Charge Point shall unlock the cable (if not permanently attached).                                                                                                 | M     |                                                                                                                               |
+| 4.10 | FR      | (if not permanently attached) when the cable is disconnected at the EV. |    | The Charge Point shall unlock the cable                                                                                                                                | O     |                                                                                                                               |
+| 4.10 | FR      | If supported.                                                           |    | This functionality shall be reported by the configuration key UnlockConnectorOnEVSideDisconnect.                                                                       | M     |                                                                                                                               |
+| 4.10 | FR      | If supported.                                                           |    | This functionality shall be controlled by the configuration key UnlockConnectorOnEVSideDisconnect.                                                                     | M     |                                                                                                                               |
+| 4.10 | C       | If StopTransactionOnEVSideDisconnect is set to false.                   |    | The transaction shall not be stopped when the cable is disconnected from the EV.                                                                                       | N     |                                                                                                                               |
+| 4.10 | FR      | If the EV is reconnected.                                               |    | The Charge Point shall allow energy transfer again.                                                                                                                    | M     | In this case there is no mechanism to prevent other EVs from charging and disconnecting during that same ongoing transaction. |
+| 4.10 | FR      | If UnlockConnectorOnEVSideDisconnect set to false.                      |    | With UnlockConnectorOnEVSideDisconnect set to false, the Connector shall remain locked at the Charge Point until the user presents the identifier.                     | M     |                                                                                                                               |
+| 4.10 | FR      | By setting StopTransactionOnEVSideDisconnect to true.                   |    | The transaction shall be stopped when the cable is disconnected from the EV.                                                                                           | M     |                                                                                                                               |
+| 4.10 | C       | If the EV is reconnected.                                               |    | Energy transfer is not allowed until the transaction is stopped and a new transaction is started.                                                                      | N     |                                                                                                                               |
+| 4.10 | FR      | If UnlockConnectorOnEVSideDisconnect is set to true.                    |    | The Connector on the Charge Point will be unlocked.                                                                                                                    | S     |                                                                                                                               |
+| 4.10 | FR      | If StopTransactionOnEVSideDisconnect is set to false.                   |    | This shall have priority over UnlockConnectorOnEVSideDisconnect.                                                                                                       | M     | (i.e. cables always remain locked when the cable is disconnected at EV side when StopTransactionOnEVSideDisconnect is false.  |
+| 4.10 | FR      |                                                                         |    | Setting StopTransactionOnEVSideDisconnect to true will prevent sabotage acts top stop the energy flow by unplugging not locked cables on EV side.                      | M     |                                                                                                                               |
+| 4.10 | C       |                                                                         |    | The outcome of such sanity checks SHOULD NOT ever cause the Central System to not respond with a StopTransaction.conf.                                                 | N     |                                                                                                                               |
+| 5.18 | FR      |                                                                   |    | The Central System shall be able to request a Charge Point to unlock a connector.                                                        | M     |                                                                                            |
+| 5.18 | FR      | _see previous requirement_                                             |    | The Charge Point shall send an UnlockConnector.req PDU.                                                                                  | M     |                                                                                            |
+| 5.18 | FR      | When a EV driver calls the CPO help-desk.                         |    | An operator shall be able to manually trigger the sending of an UnlockConnector.req to the Charge Point.                                 | M     |                                                                                            |
+| 5.18 |         |                                                                   |    | The UnlockConnector.req SHOULD NOT be used to remotely stop a running transaction, use the Remote Stop Transaction instead.              | N     |                                                                                            | StartTransaction and StopTransaction have been left out of this mechanism because they are not state related, but by their nature describe a transition.
+| 5.18 | FR      | Upon receipt of an UnlockConnector.req PDU.                       |    | The Charge Point shall respond with a UnlockConnector.conf PDU                                                                           | M     | The response PDU SHALL indicate whether the Charge Point was able to unlock its connector. |
+| 5.18 | FR      |                                                                   |    | The response PDU shall indicate whether the Charge Point was able to unlock its connector.                                               | M     |                                                                                            |
+| 5.18 | FR      | If there was a transaction in progress on the specific connector. |    | The Charge Point shall finish the transaction first as described in Stop Transaction.                                                    | M     |                                                                                            | As described in Stop Transaction.
+| 5.18 |         |                                                                   |    | UnlockConnector.req is intented only for unlocking the cable retention lock on the Connector, not for unlocking a connector access door. | N     |                                                                                            | StartTransaction and StopTransaction have been left out of this mechanism because they are not state related, but by their nature describe a transition.
+|=======================================================================
+
+
+<<<
+[[Messages]]
+== Messages
+
+
+[[unlockconnector.req]]
+=== UnlockConnector.req
+This contains the field definition of the UnlockConnector.req PDU sent
+by the Central System to the Charge Point.
+See also <<unlock-connector>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*connectorId* a|
+integer
+
+connectorId > 0
+
+ |1..1 |Required. This contains the identifier of the connector to be
+unlocked.
+|=======================================================================
+
+[[unlockconnector.conf]]
+=== UnlockConnector.conf
+This contains the field definition of the UnlockConnector.conf PDU sent
+by the Charge Point to the Central System in response to an
+<<unlockconnector.req,UnlockConnector.req>> PDU.
+See also <<unlock-connector>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<unlockstatus,UnlockStatus>> |1..1 |Required. This indicates whether the
+Charge Point has unlocked the connector.
+|=======================================================================
+
+
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+[[unlockstatus]]
+=== UnlockStatus
+_Enumeration_
+
+Status in response to <<unlockconnector.req,UnlockConnector.req>>.
+
+[cols=",",options="header",]
+|=========================================
+|*Value* |*Description*
+|*Unlocked* |Connector has successfully been unlocked.
+|*UnlockFailed* |Failed to unlock the connector.
+|*NotSupported* |Charge Point has no connector lock.
+|=========================================
+
+
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys

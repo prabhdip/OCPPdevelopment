@@ -1,0 +1,187 @@
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+[[remotestarttransaction.req]]
+=== RemoteStartTransaction.req
+This contains the field definitions of the RemoteStartTransaction.req
+PDU sent to Charge Point by Central System.
+See also <<remote-start-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*connectorId* a|integer |0..1 |Optional. Number of the connector on
+which to start the transaction. connectorId SHALL be > 0
+|*idTag* |<<idtoken,IdToken>> |1..1 |Required. The identifier that Charge Point must
+use to start a transaction.
+|*chargingProfile*| <<chargingprofile,ChargingProfile>> | 0..1 |
+Optional. Charging Profile to be used by the Charge Point for the requested
+transaction. <<chargingprofilepurposetype,ChargingProfilePurpose>>
+MUST be set to <<txprofile,TxProfile>>
+|=======================================================================
+
+[[remotestarttransaction.conf]]
+=== RemoteStartTransaction.conf
+This contains the field definitions of the RemoteStartTransaction.conf
+PDU sent from Charge Point to Central System.
+See also <<remote-start-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<remotestartstopstatus,RemoteStartStopStatus>> |1..1 |Required. Status indicating
+whether Charge Point accepts the request to start a transaction.
+|=======================================================================
+
+[[remotestoptransaction.req]]
+=== RemoteStopTransaction.req
+This contains the field definitions of the RemoteStopTransaction.req PDU
+sent to Charge Point by Central System.
+See also <<remote-stop-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*transactionId* |integer |1..1 |Required. The identifier of the
+transaction which Charge Point is requested to stop.
+|=======================================================================
+
+[[remotestoptransaction.conf]]
+=== RemoteStopTransaction.conf
+This contains the field definitions of the RemoteStopTransaction.conf
+PDU sent from Charge Point to Central System.
+See also <<remote-stop-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<remotestartstopstatus,RemoteStartStopStatus>> |1..1 |Required. Status indicating
+whether Charge Point accepts the request to stop a transaction.
+|=======================================================================
+
+[[starttransaction.req]]
+=== StartTransaction.req
+This section contains the field definition of the StartTransaction.req
+PDU sent by the Charge Point to the Central System.
+See also <<start-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*connectorId* a|
+integer
+
+connectorId > 0
+
+ |1..1 |Required. This identifies which connector of the Charge Point is
+used.
+
+|*idTag* |<<idtoken,IdToken>> |1..1 |Required. This contains the identifier for
+which a transaction has to be started.
+
+|*meterStart* |integer |1..1 |Required. This contains the meter value in
+Wh for the connector at start of the transaction.
+
+|*reservationId* |integer |0..1 |Optional. This contains the id of the
+reservation that terminates as a result of this transaction.
+
+|*timestamp* |dateTime |1..1 |Required. This contains the date and time
+on which the transaction is started.
+|=======================================================================
+
+[[starttransaction.conf]]
+=== StartTransaction.conf
+This contains the field definition of the StartTransaction.conf PDU sent
+by the Central System to the Charge Point in response to a
+<<starttransaction.req,StartTransaction.req>> PDU.
+See also <<start-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*idTagInfo* |<<idtaginfo,IdTagInfo>> |1..1 |Required. This contains information about
+authorization status, expiry and parent id.
+
+|*transactionId* |integer |1..1 |Required. This contains the transaction
+id supplied by the Central System.
+|=======================================================================
+
+
+[[stoptransaction.req]]
+=== StopTransaction.req
+This contains the field definition of the StopTransaction.req PDU sent
+by the Charge Point to the Central System.
+See also <<stop-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*idTag* |<<idtoken,IdToken>> |0..1 |Optional. This contains the identifier which
+requested to stop the charging. It is optional because a Charge Point
+may terminate charging without the presence of an idTag, e.g. in case
+of a reset. A Charge Point SHALL send the idTag if known.
+
+|*meterStop* |integer |1..1 |Required. This contains the meter value in
+Wh for the connector at end of the transaction.
+
+|*timestamp* |dateTime |1..1 |Required. This contains the date and time
+on which the transaction is stopped.
+
+|*transactionId* |integer |1..1 |Required. This contains the
+transaction-id as received by the <<starttransaction.conf,StartTransaction.conf>>.
+
+|*reason* |<<reason,Reason>> |0..1 |Optional. This contains the
+reason why the transaction was stopped. MAY only be omitted when the <<reason,Reason>> is "Local".
+
+|[[transactiondata]]*transactionData* |<<metervalue,MeterValue>> |0..* |Optional. This contains
+transaction usage details relevant for billing purposes.
+|=======================================================================
+
+[[stoptransaction.conf]]
+=== StopTransaction.conf
+This contains the field definition of the StopTransaction.conf PDU sent
+by the Central System to the Charge Point in response to a
+<<stoptransaction.req,StopTransaction.req>> PDU.
+See also <<stop-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*idTagInfo* |<<idtaginfo,IdTagInfo>> |0..1 |Optional. This contains information about
+authorization status, expiry and parent id. It is optional, because a
+transaction may have been stopped without an identifier.
+|=======================================================================
+
+[[triggermessage.req]]
+=== TriggerMessage.req
+This contains the field definition of the TriggerMessage.req PDU sent by
+the Central System to the Charge Point.
+See also <<trigger-message>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*requestedMessage* a|<<messagetrigger,MessageTrigger>> |1..1|Required.
+|*connectorId* a|
+integer
+
+connectorId > 0
+
+ |0..1 |Optional. Only filled in when request applies to a specific connector.
+|=======================================================================
+
+
+
+
+<<<
+[[Data_Types]]
+== DataTypes
+
+
+<<<
+[[ConfigurationKeys]]
+== ConfigurationKeys

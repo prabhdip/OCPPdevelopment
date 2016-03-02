@@ -1,0 +1,20 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Cancel Reservation - Rejected
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+EV o-> CS:  reserve
+activate CS
+CS -> CP: CancelReservation.req()
+activate CP
+CP --> CS : ancelReservation.conf(Rejected)
+deactivate CS
+deactivate CP
+
+@enduml

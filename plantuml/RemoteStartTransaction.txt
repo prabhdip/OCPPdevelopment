@@ -1,0 +1,17 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Remote Start Transaction
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+ 
+CP -> CS: StartTransaction.req(connectorId, idTag, meterStart, timestamp, [reservationId])
+activate CP
+activate CS
+CS --> CP: StartTransaction.conf(idTagInfo, transactionId)
+
+deactivate CS
+deactivate CP
+@enduml

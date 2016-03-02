@@ -1,0 +1,22 @@
+//General Prerequisites
+
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+􏰀
+|Central System is up and running
+|Charge Point is Accepted by the Central System
+|Charge Point has a stable active connection to the Central System Charge Point connectors are available
+|Charge Point is Idle, with no active transactions
+Charge Point is clear of faults
+Charge Point has no charging schedules active
+Charge Point has no active reservations
+Charge Point has no installed local authorization list
+Charge Point has an empty authorization cache
+Charge Point has no more OCPP messages to be send in queue Charge Point is not busy with transfer of diagnostics
+Charge Point is not busy with download of firmware
+Charge Point is not upgrading firmware
+Charge Point is ready to accept/start a charging session
+Charge Point is not configured to send clock aligned metervalues MinimumStatusDuration is set to 0
+Used identifiers are valid

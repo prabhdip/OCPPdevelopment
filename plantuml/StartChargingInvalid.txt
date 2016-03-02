@@ -1,0 +1,50 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Start Charging (invalid)
+
+actor "EV User" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+    opt
+
+    EV -> CP:  Plugin cable
+    activate EV
+    activate CP
+    CP -> EV: optional
+    deactivate EV
+    deactivate CP
+    CP --> CS:ReserveNow.conf(Accpeted)
+
+
+    CP -> CS: StatusNotification.req(status = Reserved)
+    activate CP
+    activate CS
+    CS --> CP: StatusNotification.conf()
+    deactivate CP
+    deactivate CS
+    end
+
+activate EV
+EV -> CP: Present identification()
+activate CP
+CP -> CS: Authorize.req()
+activate CS
+CS --> CP: Authorize.conff(invalid /blocked /experid)
+deactivate CS
+CP --> EV: optional notification()
+
+deactivate EV
+deactivate CP
+
+note over CP
+no status change
+end note
+
+
+
+
+@enduml

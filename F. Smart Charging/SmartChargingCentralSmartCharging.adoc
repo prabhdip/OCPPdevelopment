@@ -1,0 +1,54 @@
+<<<
+[[UseCases]]
+== Smart Charging (central smart charging)
+
+===  UC.XX - Smart Charging (central smart charging) +
+
+Functional block: F. Smart Charging +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Smart Charging (central smart charging)
+|*2*    | *ID*                     | UC.XXc
+|*3*    | *Objectives*             | To constrain the charging time by the Central System.
+|*4*    | *Description*            | With Central smart charging the constraints on the charging
+                                    schedule, per transaction, are determined by the Central System. The Central System uses
+                                    these schedules to stay within limits imposed by any external system.
+|       | Actors                   | Charge Point, Central System
+|       | Scenario description     |
+|       | Alternative scenario's   |
+|*5*    | *Prerequisites*          |
+|*6*    | *Post conditions*        | Successful :post condition:
+                                     Failure post condition:
+|*7*    | *Sequence diagram*       |
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                |
+|*10*   | *Test cases*             |
+
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+|*ID.*       |*Precondition*        | *Requirement*                            | *M/O/C*
+|*FR.01.XXX* |                      |                                          |
+|*FR.01.XXX* |                      |                                          |
+|=======================================================================
+
+image::SmartChargingCentralSmartCharging.png["Central Smart Charging",scaledwidth="60%"]
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys

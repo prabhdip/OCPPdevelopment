@@ -1,0 +1,15 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CP -> CS: DiagnosticsStatusNotification.req(status)
+activate CP
+activate CS
+CS --> CP: DiagnosticsStatusNotification.conf()
+
+deactivate CS
+deactivate CP
+@enduml

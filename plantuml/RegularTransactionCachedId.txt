@@ -1,0 +1,88 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+'This sequence diagram describes a cached identification use case. This sequence consists of 2 separate transactions. During the first transaction the id of the user is cached, during the second this cached identification is used.
+'For a cached valid identification it is not logical to send the Authorize.req. The StartTransaction.conf also contains this identification. So if the identification is no longer valid the transaction will be stopped.
+
+
+
+title Regular Transaction - cached Id
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+EV -> CP : Present identification()
+activate EV #FFFFFF
+activate CP
+CP -> CS :Authorize.req
+activate CS
+CS --> CP :Authorize.conf
+deactivate CS
+CP ->o CP : store Id in authorization cache()
+
+opt
+CP ->o] : continue, start and stop regular charging session
+deactivate CP
+deactivate EV
+end
+note over EV, CS : Time periods between charge sessions can be minutes, but can also be days.
+
+
+'''
+
+activate EV #FFFFFF
+EV -> CP : Plugin cable()
+
+CP -> CS : StatusNotification.req(Preparing)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+EV -> CP : Present identification()
+CP ->o CP : check authorization cache()
+
+opt
+activate CP
+CP -> CS :Authorize.req
+activate CS
+CS --> CP :Authorize.conf
+deactivate CS
+end
+|||
+opt if found valid in local authorization list or authorized
+|||
+opt if cable not permanently attached
+
+CP ->o CP : lock connector()
+end
+
+CP ->o CP : start EnergyOffer()
+
+CP -> CS : StatusNotification.req(Preparing)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+
+CP -> CS: StartTransaction.req()
+activate CS
+CS -->CP: StartTransaction.conf()
+deactivate CS
+
+CP ->o] : continue regular charging session
+end
+
+opt not valid
+CP --> EV : optional notification()
+CP -> CP : return to idle state()
+|||
+
+deactivate EV
+deactivate CP
+end
+
+
+@enduml

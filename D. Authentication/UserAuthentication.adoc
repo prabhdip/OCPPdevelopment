@@ -1,0 +1,150 @@
+<<<
+[[UseCases]]
+== Use cases
+
+===  UC.02 - User Authentication +
+
+Functional Block: D. Authentication +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | User Authentication
+|*2*    | *ID*                     | UC.02
+|*3*    | *Objective(s)*             | Before the owner of an electric vehicle can start or stop charging, the Charge Point has to authorize the operation.
+|*4*    | *Description*            | When a Charge Point needs to charge an electric vehicle, it needs to authenticate the User first before the charging can be started. If the User is authorized the Charge Point informs the Central System that it has started with charging.
+                                      *1.* Local authorization through authorization cache (i.e. valid identifier) +
+                                      *2.* Authorization through local authorization list (i.e. valid identifier) +
+                                      *3.* Send local list
+|       | _Actors_                  | User, Charge Point, Central System
+|       | _Scenario description_    |
+                                      *1.* The User wants to charge the electric vehicle. +
+                                      *2.* The Charge Point needs to authorize the operation. +
+                                      *3.* The Charge Point sends an Authorize.req PDU to the Central System to request authorization. +
+                                      *4.* Upon receipt of an Authorize.req PDU, the Central System responds with an Authorize.conf PDU. (This response PDU SHALL indicate whether or not the idTag is accepted by the Central System). +
+                                      *5.* If the Central System accepts the idTag include san authorization status value indicating acceptance or a reason for rejection.+
+                                      *6.* If the Charge Point has implemented an Authorization Cache, then upon receipt of an Authorize.conf PDU the Charge Point updates the cache entry.
+
+|       | _Alternative scenarios_  | *1.* Authorize invalid / blocked / expired
+                                     *2.* Unknown Offline Authorization
+
+|*5*    | *Prerequisites*          |  *1.* The Charge Point SHALL only supply energy after authorization.
+                                      *2.* If the Central System accepts the idTag. +
+                                      *3.* If Charge Point has implemented an Authorization Cache.
+|*6*    | *Postconditions*         |  **Successful postcondition:**
+                                     *Failure postcondition:*
+                                     The user is authenticated and can start or stop charging.
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+image::UserAuthentication.png["User Authentication",scaledwidth="95%"]
+
+[cols="1,2,6",options="header",]
+|=======================================================================
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                |  If an idTag presented by the user is not present in the Local Authorization List or Authorization Cache,
+                                      then the Charge Point SHALL send an <<authorize.req, Authorize.req>> PDU to the Central System to request
+                                      authorization. If the idTag is present in the Local Authorization List or Authorization Cache, then the
+                                      Charge Point MAY send an <<authorize.req, Authorize.req>> PDU to the Central System.
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+
+
+=== UC.02 - Requirements
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|==============================
+| *CH* | *FR/NF/C* | *Precondition*                                                                                                                                        | *ID*       | *Requirement definition*                                                                                                                                                             | *M/O/C* | *Messages* | *Rationale*                                                                                                                                             | *Note*
+| 3.8 | FR      |                                                                                                                                                        | FR02.001 | IdToken data acquired via local token reader hardware shall usually a (4 or 7 byte) UID value of a physical RFID card, typically represented as 8/14 hexadecimal digit characters. | M     |          |                                                                                                                                                        |
+| 3.8 | FR      |                                                                                                                                                        | FR02.002 | IdTokens shall be (single use) virtual transaction authorization codes.                                                                                                            | M     |          | That deliberately use a non-standard UID format to avoid possible conflict with real UID values.                                                       |
+| 3.8 | FR      |                                                                                                                                                        | FR02.003 | IdTokens shall be be (single use) virtual RFID tokens.                                                                                                                             | M     |          |                                                                                                                                                        |
+| 3.8 | FR      |                                                                                                                                                        | FR02.004 | IdToken data used as ParentIds may often use a shared central account identifier for the ParentId, instead of a UID of the first/master RFID card of an account.                   | M     |          |                                                                                                                                                        |
+| 3.8 | FR      |                                                                                                                                                        | FR02.005 | Message data elements of the IdToken class (including ParentId) shall contain any data, subject to the constraints of the data-type (CiString20Type).                              | C     |          |                                                                                                                                                        |
+| 3.8 | FR      |                                                                                                                                                        | FR02.006 | Charge Points shall not make any presumptions as to the format or content of such data .                                                                                           | M     |          |                                                                                                                                                        |
+| 3.8 | FR      | To promote interoperability, based on common practice to date in the case of IdToken data representing physical ISO 14443 compatible RFID card UIDs. | FR02.007 | UIDS shall be represented  as hex representations of the UID bytes.                                                                                                                | C     |          | To promote interoperability, based on common practice to date in the case of IdToken data representing physical ISO 14443 compatible RFID card UIDs. |
+| 3.9 | FR      |                                                                                                                                                        | FR02.008 | Tokens (idTags) shall be grouped for authorization purposes by specifying a common group identifier in the optional ParentId element in IdTagInfo.                                 | M     |          |                                                                                                                                                        |
+| 4.1  | NF | Before the owner of an electric vehicle can start or stop charging, the Charge Point has to authorize the operation. | NF02.001 | The Charge Point shall only supply energy after authorization.                                                                                                                         | M |               |   |
+| 4.1  | FR | When stopping a transaction.                                                                                         | FR02.009 | The Charge Point shall only send an Authorize.req when the identifier used for stopping the transaction is different from the identifier that started the transaction.                 | M | Authorize.req |   |
+| 4.1  | FR |                                                                                                                      | FR02.010 | Authorize.req should only be used for the authorization of an identifier for charging.                                                                                                 | M | Authorize.req |   |
+| 4.1  | FR |                                                                                                                      | FR02.011 | The Charge Point shall authorize identifier locally without involving the Central System.                                                                                              | O |               |   | As described in Local Authorization List.
+| 4.1  | FR | If an idTag presented by the user is not present in the Local Authorization List or Authorization Cache.             | FR02.012 | The Charge Point shall send an Authorize.req PDU to the Central System to request authorization.                                                                                       | M | Authorize.req |   |
+| 4.1  | FR | If the idTag is present in the Local Authorization List or Authorization Cache.                                      | FR02.013 | The Charge Point shall send an Authorize.req PDU to the Central System.                                                                                                                | O | Authorize.req |   |
+| 4.1  | FR | Upon receipt of an Authorize.req PDU.                                                                                | FR02.014 | The Central System shall respond with an Authorize.conf PDU.                                                                                                                           | M | Authorize.req |   |
+| 4.1  | FR |                                                                                                                      | FR02.015 | The response PDU shall indicate whether or not the idTag is accepted by the Central System.                                                                                            | M |               |   |
+| 4.1  | FR | If the Central System accepts the idTag.                                                                             | FR02.016 | The response PDU shall include a parentIdTag.                                                                                                                                          | S |               |   |
+| 4.1  | FR | If the Central System accepts the idTag.                                                                             | FR02.017 | The response PDU shall include an authorization status value indicating acceptance or a reason for rejection.                                                                           | M |               |   |
+| 4.1  | FR | If Charge Point has implemented an Authorization Cache.                                                              | FR02.018 | The Charge Point shall update the cache entry.                                                                                                                                         | M | Authorize.req |   |
+| 4.10 | FR | If the Charge Point has implemented an Authorization Cache,  then upon receipt of a StopTransaction.conf PDU.        | FR02.019 | The Charge Point shall update the cache entry, if the idTag is not in the Local Authorization List, with the IdTagInfo value from the response as described under Authorization Cache. | M |               |   |
+| 5.4 | FR |                                       | FR01.020 | The Central System shall request a Charge Point to clear its Authorization Cache.                       | M |                |   |
+| 5.4 | FR |                                       | FR01.021 | The Central System shall send a ClearCache.req PDU for clearing the Charge Point’s Authorization Cache. | M | ClearCache.req |   |
+| 5.4 | FR | Upon receipt of a ClearCache.req PDU, | FR01.022 | The Charge Point shall respond with a ClearCache.conf PDU.                                              | M |                |   |
+| 5.4 | FR |                                       | FR01.023 | The response PDU shall indicate whether the Charge Point was able to clear its Authorization Cache.     | M |                |   |
+|==============================
+
+
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+
+
+[[authorize.req]]
+=== Authorize.req
+
+This contains the field definition of the Authorize.req PDU sent by the
+Charge Point to the Central System.
+See also <<authorize>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*idTag* |<<idtoken,IdToken>> |1..1 |Required. This contains the identifier that
+needs to be authorized.
+|=======================================================================
+
+[[authorize.conf]]
+=== Authorize.conf
+
+This contains the field definition of the Authorize.conf PDU sent by the
+Central System to the Charge Point in response to a <<authorize.req,Authorize.req>> PDU.
+See also <<authorize>>
+
+<<<
+[[Data_Types]]
+== DataTypes
+
+[[idtoken]]
+=== IdToken
+_Class_
+
+Contains the identifier to use for authorization. It is a case
+insensitive string. In future releases this may become a complex type to
+support multiple forms of identifiers.
+
+[cols=",,",options="header",]
+|==============================================================
+|*Field Name* |*Field Type* |*Description*
+|*IdToken* |String[20] |Required. IdToken is case insensitive.
+|==============================================================
+
+
+<<<
+[[ConfigurationKeys]]
+== ConfigurationKeys
+
+[[configkey-authorization-cache-enabled]]
+==== `AuthorizationCacheEnabled`
+
+[cols="1,3"]
+|===
+|*Required/optional*|optional
+|*Accessibility*|RW
+|*Type*|boolean
+|*Description*|
+If this key exists, the Charge Point supports an <<authorization-cache, Authorization Cache>>.
+If this key reports a value of _true_, the <<authorization-cache, Authorization Cache>> is enabled.
+|===

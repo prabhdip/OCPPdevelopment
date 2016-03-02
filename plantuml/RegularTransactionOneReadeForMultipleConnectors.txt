@@ -1,0 +1,48 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Regular Transaction - One Reader for Multiple Connectors\n\nRemark: x is the socket the cable is plugged in to.
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+EV -> CP : Present identification()
+activate EV
+
+
+CP -> CS :Authorize.req()
+activate CP
+activate CS
+CS --> CP :Authorize.conf()
+deactivate CS
+
+opt if only 1 connector available
+CP -> CS: StatusNotification.req(Free connnector no, Preparing)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+deactivate CP
+|||
+end
+
+note right : Please note: of more than 1 connector available\npreparing status is omitted.
+
+EV -> CP : Plugin cable()
+activate CP
+
+opt if cable not permanently attached
+CP -> CP : lock connector()
+end
+CP -> CP : start EnergyOffer()
+
+CP -> CS : StatusNotification.req(x, Charging)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+deactivate CP
+CP ->o] : Resume regular charging session
+deactivate EV
+@enduml

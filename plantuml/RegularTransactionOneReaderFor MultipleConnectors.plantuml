@@ -1,0 +1,40 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Regular Transaction - One Reader for Multiple Connectors
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+EV -> CP : Present identification()
+
+CP -> CS :Authorize.req
+activate CS
+CS --> CP :Authorize.conf
+deactivate CS
+
+opt
+CP -> CS: StatusNotification.req(Free connnector no, Preparing)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+end
+
+
+EV -> CP : Plugin cable()
+
+CP -> CP : lock connector()
+
+CP -> CP : start EnergyOffer()
+
+CP -> CS : StatusNotification.req(x, Charging)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+CP ->o] : Resume regular charging session
+
+
+@enduml

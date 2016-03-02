@@ -1,0 +1,52 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Reset With Running Transaction
+
+actor "CPO" as CPO
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+CPO -> CP:  reset
+CS  -> CP:  Reset.req()
+activate CS
+CP  -> CS:  Reset.conf()
+CS --> CPO: optional notification()
+
+CP -> CP: stop Energy Offer()
+opt
+  opt if cable not permanently attached
+    CP  -> CP:  unlock connector
+end
+
+alt if soft reset
+
+CP -> CS: stopTransaction.req(Reason = SoftRest)
+    activate CS
+    CS --> CP: StopTransaction.conf()
+    CP -> CP: restart application
+      deactivate CS
+  end
+
+alt if hard reset
+
+  alt assert if possible before reboot
+  CP -> CS : StopTransaction.req(Reason = Hardrest)
+  activate CS
+  CS --> CP: StopTransaction.conf
+  deactivate CS
+  end
+end
+
+CP -> CP: reboot()
+activate CP
+deactivate CP
+
+CP ->o]: cold boot Charge Point
+
+note over CP: Please note that a boot charge\n point means that the Connectors return\nto the status prior to the reboot if\nthe status was specifically set from the Central System.
+
+
+@enduml

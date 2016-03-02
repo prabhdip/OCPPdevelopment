@@ -1,0 +1,140 @@
+<<<
+[[UseCases]]
+== Use cases
+
+===  UC.XX - Resetting +
+
+Functional block: C. Remote Commands +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Resetting
+|       | _Functional Block_       | C. Remote Commands
+|*2*    | *ID*                     | UC.XX
+|*3*    | *Objective(s)*           | The Central System sends a <<reset.conf, Reset.conf>> PDU for requesting a Charge Point to reset itself.
+|*4*    | *Description*            | The Charge Points sends a request to the Central System with information about its configuration (e.g.
+                                     version, vendor, etc.).The Central System responds to indicate whether it will accept the Charge Point.
+|       | _Actors_                 | CPO, Charge Point, Central System
+|       | _Scenario description_   |
+                                     *1.* Persistent states: for example: Connector set to Unavailable shall persist a reboot. +
+                                     *2.* At receipt of a soft reset, the Charge Point SHALL return to a state that behaves as just having been
+                                     booted. If any transaction is in progress it SHALL be terminated normally, before the reset, as in Stop Transaction. +
+                                     *3.* At receipt of a hard reset the Charge Point SHALL attempt to terminate any transaction in progress normally as in
+                                     StopTransaction and then perform a reboot.
+
+|       | _Alternative scenarios_  | *1.* Hard / soft reset without transaction. +
+                                     *2.* Hard / soft reset with transaction.
+|*5*    | *Prerequisites*          | The Profile _Reservation_ is installed.
+|*6*    | *Postconditions*         | *Successful postcondition:* +
+                                     The Charge Point is able to reset itself.
+                                     *Failure postcondition:* +
+                                     The Charge Point is _not_ able to reset itself.
+                                     The Charge Point terminated any transaction in progress normally as in StopTransaction and then perform a reboot.
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+
+image::media/ResetWithoutTransaction.png["Reset Without Transaction",scaledwidth="95%"]
+
+''''
+
+image::media/ResetWithTransaction.png["Reset With Transaction",scaledwidth="95%"]
+
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                | Persistent states: for example: Connector set to Unavailable shall persist.
+|*10*   | *Test cases*             | <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                                                                 | *ID* | *Requirement definition*                                                                                                                                                          | *M/O/C* | *Rationale* | *Note*
+| 5.14 | FR      |                                    |    | The Central System shall send a <<reset.conf, Reset.conf>> PDU PDU                                                                                     | M     |           |
+| 5.14 | FR      | _see previous requirement_              |    | The Central System shall be able to request a hard or a soft reset.                                                               | M     |           |
+| 5.14 | FR      | Upon receipt of a <<reset.conf, Reset.conf>>  PDU.   |    | The Charge Point shall respond with a <<reset.conf, Reset.conf PDU>>.                                                                             | M     |           |
+| 5.14 | FR      |                                    |    | The response PDU shall include whether the Charge Point is will attempt to reset itself.                                          | M     |           |
+| 5.14 | FR      | At receipt of a soft reset.        |    | The Charge Point shall return to a state that behaves as just having been booted.                                                 | M     |           |
+| 5.14 | FR      | If any transaction is in progress. |    | The Charge Point shall be terminated normally, before the reset, as in Stop Transaction.                                          | M     |           |
+| 5.14 | FR      | At receipt of a hard reset.        |    | The Charge Point shall attempt to terminate any transaction in progress normally as in StopTransaction and then perform a reboot. | M     |           |
+|=======================================================================
+
+<<<
+[[Messages]]
+== Messages
+
+
+[[<<reset.conf, Reset.conf>> PDU]]
+=== <<reset.conf, Reset.conf>> PDU
+This contains the field definition of the <<reset.conf, Reset.conf>> PDU PDU sent by the
+Central System to the Charge Point.
+See also <<reset>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*type* |<<resettype,ResetType>> |1..1 |Required. This contains the type of reset
+that the Charge Point should perform.
+|=======================================================================
+
+[[reset.conf]]
+=== Reset.conf
+This contains the field definition of the Reset.conf PDU sent by the
+Charge Point to the Central System in response to a <<<<reset.conf, Reset.conf>> PDU,<<reset.conf, Reset.conf>> PDU>> PDU.
+See also <<reset>>
+
+
+<<<
+[[Data_Types]]
+== DataTypes
+
+
+[[resetstatus]]
+=== ResetStatus
+_Enumeration_
+
+Result of <<<<reset.conf, Reset.conf>> PDU,<<reset.conf, Reset.conf>> PDU>>.
+
+[cols=",",options="header",]
+|=========================================
+|*Value* |*Description*
+|*Accepted* |Command will be executed.
+|*Rejected* |Command will not be executed.
+|=========================================
+
+[[resettype]]
+=== ResetType
+_Enumeration_
+
+Type of reset requested by <<<<reset.conf, Reset.conf>> PDU,<<reset.conf, Reset.conf>> PDU>>.
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*Hard* |Full reboot of Charge Point software.
+
+|*Soft* |Return to initial status, gracefully terminating any
+transactions in progress.
+|=======================================================================
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys
+
+[[configkey-reset-retries]]
+==== `ResetRetries`
+
+[cols="1,3"]
+|===
+|*Required/optional*|required
+|*Accessibility*|RW
+|*Type*|int
+|*Unit*|times
+|*Description*|
+Number of times to retry an unsuccessful
+reset of the Charge Point.
+|===

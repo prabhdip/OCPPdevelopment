@@ -1,0 +1,45 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Unlock Connector (transaction)\n\nPrecondition: transaction running.
+
+actor "External Trigger" as ET
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+ET -> CS: unlock connector
+activate CS
+CS -> CP: UnlockConnector.req()
+activate CP
+
+    alt if cable not permanently attached
+    CP ->o CP: stop EnergyOffer()
+    CP ->o CP: unlock connector()
+    CP --> CS: UnlockConnector.conf(unlocked)
+    CP -> CS: StopTransaction.req (Reason = UnlockCommand)
+    activate CS
+    CS --> CP: StopTransaction.conf()
+    deactivate CS
+    CP -> CS: StatusNotification.req(finishing)
+    activate CS
+    CS --> CP: StatusNotification.conf
+    deactivate CS
+    end
+
+    alt if cable permanently attached
+    CP --> CS: UnlockConnector.conf(NotSupported)
+deactivate CP
+    end
+
+CS --> ET: optional notification
+deactivate CS
+
+Postconditions:
+- Charge Point is in Idle state.
+- Connector is unlocked, if not permanently attached.
+- Charge Point reports Connector as “Finishing” until cable is removed from
+socket.
+
+
+@enduml

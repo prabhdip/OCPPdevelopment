@@ -1,0 +1,79 @@
+<<<
+[[UseCases]]
+== Use Cases
+
+===  UC.01a - Cold Boot Charge Point (Pending) +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | First Boot Charge Point (Pending)
+|       | _Functional Block_       | A. Provisioning
+|*2*    | *ID*                     | UC.01a
+|*3*    | *Objective(s)*           | *1.* Give the Central System a way to control which Charge Points are allowed to connect to the system.
+                                     *2.* To inform the Central System is currently in the _Pending_ status: +
+                                     *3.* To retrieve or set certain configuration information. +
+                                     *4.* To inform that the Central System might be not ready not the accept the Charge Point. CHECK
+|*4*    | *Description*            | This use case describes how the Central System can control Charge Point accessing its system. To be
+                                     able to control Charge Points connecting to a Central System, Charge Points are required
+                                     to send a <<BootNotification.req,BootNotification.req>>, this request contains some information about
+                                     the Charge Point. This sub-use case particularly describes how the the Charge Point is in the _Pending_ status.
+|       | _Actors_                 | Charge Point, Central System
+|       | _Scenario description_   | *1.* The Charge Point is powered down. +
+                                     *2.* The Charge Point sends a <<BootNotification.req,BootNotification.req>> PDU to the Central System. +
+                                     *3.* The Central System receives the status _Pending_ from the Charge Point. +
+                                     *4.* The Central System then, is able to send messages to the Charge Point in
+                                     order to change the configuration of the Charge Point. +
+                                     *5.* The Charge Point will resend the BootNotification.req every XX seconds
+                                     (Interval from the <<bootNotification.conf, BootNotification.conf>>) +
+                                     *6.* When the Central System returns with <<bootNotification.conf, BootNotification.conf>>
+                                     with the status accepted, UC.01 - Psychical Cold Boot Charge Point is valid.
+|       | _Alternative scenarios_  | UC.01a - First Boot Charge Point (Pending) +
+                                     UC.01b - First Boot Charge Point (Rejected) +
+|*5*    | *Prerequisites*          | *1.* The Charge Point is powered down. +
+                                     *2.* The Charge Point received the status _Pending_.
+|*6*    | *Postconditions*         | *Successful postcondition:* +
+                                     The Charge Point is in _Idle_ state, and _Accepted_. +
+                                     *Failure postcondition:* +
+                                     The Charge Point received the status _Rejected_, <<UC.01b>> applies.
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+image:media/ColdBootChargePoint_Pending.png["Cold Boot Charge Point (Pending)",scaledwidth="95%"]
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*8*    | *Error handling*         | What to do when a non allowed command is received by the Charge Point? CHECK
+                                     (Insert Unhappy flows?)
+|*9*    | *Remarks*                | CHECK
+|*10*   | *Test cases*             | <<Test Case Root Id: 002>>
+
+|=======================================================================
+
+=== UC.01a - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*    | *ID* | *Requirement definition*   | *M/O/C* | *Rationale* | *Note*
+| 4.2 | FR | | FR.01a.001 |The Central System MAY send request messages to retrieve information from the Charge Point or change its configuration. The Charge Point SHOULD respond to these messages. |O| |
+| 4.2 | FR | | FR.01a.002 | While not yet accepted by the Central System, the Charge Point may allow locally- authorized transactions. |O| |
+| 4.2 | C | | C.01a.001 | The Charge Point SHALL NOT send request messages to the Central System unless it has been instructed by the Central System to do so with a TriggerMessage.req request. |C| |
+| 4.2 | C | | C.01a.002 | A Charge Point SHOULD NOT send a BootNotification.req earlier than the value of the Interval field in the BootNotification.conf. unless requested to do so with a TriggerMessage.req. |C| |
+| 4.2 | C | | C.01a.003 | The Charge Point SHALL NOT interrupt communication and respond normally to all messages from Central System. However, the ChargePoint SHALL NOT initiate any messages. |C| |
+| 4.2 | C | | C.01a.004 | While in pending state. | FR.001| The following Central System initiated messages are not allowed: RemoteStartTransaction.req and RemoteStopTransaction.req |C| |
+| 4.2 | C | | C.01a.001 | If the Central System returns the Pending status. | The communication channel SHOULD NOT be closed by either the Charge Point or the Central System. |C| |
+|=======================================================================
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys

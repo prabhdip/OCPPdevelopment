@@ -1,0 +1,54 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Cold Boot Charge Point
+
+participant "Engineer" as USR
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+note over CP: Powered down...
+
+USR -> CP : Power up
+activate CP
+CP -> CS : BootNotification.req()
+activate CS
+CS --> CP : BootNotification.conf(status = Accepted)
+deactivate CS
+
+opt
+loop for all Connectors
+CP -> CS : StatusNotification.req()
+activate CS
+note right : Connector 0: Unavailable\nConnector 1: Unavailable\n. . .\nConnector n: Unavailable
+CS --> CP : StatusNotification.conf()
+deactivate CS
+|||
+end
+CP ->o CP :  Self check
+
+end
+
+loop for all Connectors
+CP -> CS : StatusNotification.req()
+activate CS
+note right : Connector 0: Available\nConnector 1: Available\n. . .\nConnector n: Available
+CS --> CP : StatusNotification.conf()
+deactivate CS
+|||
+end
+
+note over CP, CS : Resume normal operation
+
+loop while powered up and no other messages
+CP -> CS : HeartBeat.req()
+activate CS
+CS --> CP :  HeartBeat.conf()
+|||
+deactivate CS
+end
+
+deactivate CP
+
+@enduml

@@ -1,0 +1,27 @@
+:numbered:
+:toc: macro
+
+= All Functional Blocks
+
+
+[cols="1,2,6",options="header",]
+|=======================================================================
+| No.   | Functional Block   | Description
+| *A.*  | Provisioning       | The meaning of "the automation of all the steps required to manage (setup,
+                               amend, and revoke) user or system access entitlements or data relative to
+                               electronically published services."
+| *B.*  | Transactions       | The part of the charging process that starts when all relevant preconditions
+                              (e.g. authorization, plug inserted) are met, and ends at the moment when the
+                              Charge Point irrevocably leaves this state.
+| *C.*  | Remote Commands(s) |
+| *D.*  | Authorization      |
+| *E.*  | Reservation        | Support for reservation of a Charge Point.
+| *F.*  | Smart Charging     |
+| *G.*  | Remote Trigger     |
+
+
+
+|=======================================================================
+
+
+Support for firmware update management and diagnostic log file download.

@@ -1,0 +1,232 @@
+:numbered:
+:toc: macro
+
+= Remote Commands
+
+Use case based functional description between Charge Point and Central System based on OCPP 1.6.
+
+[cols=","]
+|================================
+|Document Version |0.1
+|Document Status |DRAFT
+|Document Release Date | XXXX-XX-XX
+|================================
+
+<<<
+Copyright © 2010 – 2016 Open Charge Alliance. All rights reserved.
+
+This document is made available under the _*Creative Commons Attribution-NoDerivatives 4.0 International Public License*_ (https://creativecommons.org/licenses/by-nd/4.0/legalcode).
+
+<<<
+*Version History*
+
+[cols="1,2,2,2",options="header",]
+|=======================================================================
+|*Version* |*Date* |*Author* |*Description*
+
+|0.1
+|2016-01-25
+|Jonel Timbergen +
+_ElaadNL_ +
+ +
+Robert de Leeuw +
+_IHomer_ +
+ +
+
+| <insert use-cases names>
+
+|=======================================================================
+
+<<<
+[[scope]]
+== Scope
+
+This document defines the protocol used between a *Charge Point* and
+**Central System** in use cases. If the protocol requires a certain action or
+response from one side or the other, then this will be stated in this
+document.
+
+The specification does not define the communication technology. Any
+technology will do, as long as it supports TCP/IP connectivity.
+
+For complex systems, the use case methodology supports a common understanding of functionalities,
+_Actors_and processes across different technical committees or even different organizations. Developed
+as software engineering tool, the methodology can be used to support the development of standards as it
+the analysis of requirements in relation to new or existing standards.
+
+<<<
+[[terminology-and-conventions]]
+== Terminology and Conventions
+
+[[conventions]]
+=== Conventions
+
+The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”,
+“SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this
+document are to be interpreted as described in [RFC2119]], subject to the following additional clarification clause:
+
+The phrase “valid reasons in particular circumstances” relating to the usage of the terms “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, and “NOT RECOMMENDED” is to be taken to mean technically valid reasons, such as the absence of necessary hardware to support a function from a charge point design: for the purposes of this specification it specifically excludes decisions made on commercial, or other non-technical grounds, such as cost of implementation, or likelihood of use.
+
+All sections and appendixes, except “Scope” and “Terminology and
+Conventions”, are normative, unless they are explicitly indicated to be
+informative.
+
+
+[[definitions]]
+=== Definitions
+
+This section contains the terminology that is used throughout this
+document.
+
+[cols="3,8"]
+|=======================================================================
+|*Central System* |Charge Point Management System: the central system
+that manages Charge Points and has the information for authorizing users
+for using its Charge Points.
+
+|*CiString* | Case Insensitive String. Only printable ASCII allowed.
+
+|*Charge Point* |The Charge Point is the physical system where an
+electric vehicle can be charged. A Charge Point has one or more
+connectors.
+
+|*Charging Profile* | Generic Charging Profile, used for different types of Profiles. Contains information about the Profile and holds the <<chargingschedule,Charging Schedule>>. In future versions of OCPP it might hold more than 1 <<chargingschedule,Charging Schedule>>.
+
+|*Charging Schedule* | Part of a Charging Profile. Defines a block of charging Power or Current limits.
+Can contain a start time and length.
+
+|*Charging Session* |Part of a transaction during which the EV is allowed to request energy
+
+|*Composite Charging Schedule* |The charging schedule as calculated by the Charge Point. It is the result of the calculation of all active schedules and possible local limits present in the Charge Point. Also IEC 15118 limits might be taken into account.
+
+|*Connector* |The term “Connector”, as used in this specification,
+refers to an independently operated and managed electrical outlet on a
+Charge Point. This usually corresponds to a single physical connector,
+but in some cases a single outlet may have multiple physical socket
+types and/or tethered cable/connector arrangements to facilitate
+different vehicle types (e.g. four-wheeled EVs and electric scooters).
+
+|*Control Pilot signal* | signal used by a Charge Point to inform EV
+of maximum Charging power or current limit, as defined by <<ref-IEC61851,[IEC61851-1]>>.
+
+|[[energy-transfer-period]] *Energy Transfer Period* | Time during which an EV chooses to take offered energy, or return it. Multiple Energy Transfer Periods are possible during a Transaction.
+
+|*Local Controller* |Optional device in a smart charging infrastructure. Located on the premises with a number of Charge Points connected to it. Sits between the Charge Points and Central System. Understands and speaks OCPP messages. Controls the Power or Current in other Charge Point by using OCPP smart charging messages. Can be a Charge Point itself.
+|*OCPP-J*| OCPP via JSON over WebSocket
+|*OCPP-S*| OCPP via SOAP
+|*Phase Rotation*| Defines the wiring order of the phases between the energy meter (or if absent, the grid connection), and the Charge Point connector.
+
+|[[transaction]] *Transaction* | The part of the charging process that starts when all relevant preconditions (e.g. authorization, plug inserted) are met, and ends at the moment when the Charge Point irrevocably leaves this state.
+
+|*String* | Case Sensitive String. Only printable ASCII allowed.
+All strings in messages and enumerations are case sensitive, unless
+explicitly stated otherwise.
+|=======================================================================
+
+[[conventions]]
+=== Conventions
+
+
+[cols="3,8"]
+|=======================================================================
+| *Columm heading*                   | *Description*
+| *CH*                                 | Section of OCPP 1.6 specification document
+| *FR/NF/C*                            | Identifies whether it is a functional requirement, non-functional requirement or a constraint.
+| *Functional requirement*             | Functional requirements are requirements that specify a function that a system or system component must be able to perform.
+| *Non-functional requirement*         | Non-functional requirements are requirements which are not specifically concerned with the functionality of a system but place restrictions on the product being developed
+| *Constraint*                         | Constraints are a type of non-functional requirement that is imposed by the client that restricts the implementation of the system or the development process.
+| *ID*                                 | Use-case identification number.
+| *Use-case*                           | A use case is a specification of sequences of actions, including variant sequences and error sequences, that a system, subsystem, or class can perform by interacting with outside actors
+| *Actor*                              | The actor(s) involved in the use-cases and associated requirements.
+| *Precondition*                    | Lists the conditions that must be true before the Use Case starts
+| *ID*                                 | Requirement identification number.
+| *Requirement definition*             | The condition or capability needed by a user, Charge Point and Central System to satisfy the contract, standard, specification, or other formally imposed document.
+| *M/O/C*                              | This column defines whether requirements are mandatory (M) or optional (O) or conditional (C) for the instantiation of a specific logical node.
+| *Messages*                           | This colomn defines the messages which are used in the use-cases.
+| *Rationale*                          | The logical basis for the requirement.
+| *Note*                               | Extra annotations required for understaning of the requirement.
+| *Requirement OCPP 1.6 specification* | Former requirement specification.
+| *Specification part*                 | Section of OCPP 1.6 specification document.
+| *pp*                                 | Page number of OCPP 1.6 specification document.
+
+|=======================================================================
+
+
+
+[[references]]
+=== References
+
+[cols="2,9"]
+|=======================================================================
+|*[[ref-IEC61851]][IEC61851-1]* |“IEC 61851-1 2010: Electric vehicle conductive charging system - Part 1: General requirements” https://webstore.iec.ch/publication/6029[https://webstore.iec.ch/publication/6029]
+|*[[ref-OCPP15]][OCPP1.5]* |“OCPP 1.5: Open Charge Proint Protocol 1.5” http://www.openchargealliance.org/downloads/[http://www.openchargealliance.org/downloads/]
+|*[[ref-OCPP_CT]][OCPP_1.6CT]* |“OCPP 1.6 Compliance testing”  http://www.openchargealliance.org/downloads/[http://www.openchargealliance.org/downloads/]
+|*[[ref-OCPP_IMP_J]][OCPP_IMP_J]* |“OCPP JSON Specification”  http://www.openchargealliance.org/downloads/[http://www.openchargealliance.org/downloads/]
+|*[[ref-OCPP_IMP_S]][OCPP_IMP_S]* |“OCPP SOAP Specification”  http://www.openchargealliance.org/downloads/[http://www.openchargealliance.org/downloads/]
+|[[ref-RFC2119]]*[RFC2119]* |“Key words for use in RFCs to Indicate Requirement
+Levels”. S. Bradner. March
+1997. http://www.ietf.org/rfc/rfc2119.txt[http://www.ietf.org/rfc/rfc2119.txt]
+|=======================================================================
+
+<<<
+[[UseCases]]
+== Use cases
+
+
+Functional Block:
+
+===  UC.XX - Download firmware update +
+
+[cols="1,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Download firmware update
+|*2*    | *ID*                     | UC.XX
+|*3*    | *Objective(s)*             | When a Charge Point is notified about new firmware, it needs to be able to download this firmware.
+|*4*    | *Description*            | Central System can notify a Charge Point that it needs to update its firmware. When a Charge Point is notified about new firmware, it needs to be able to download this firmware.
+|       | _Actors_                  | CPO, Charge Point, Central System
+|       | _Scenario description_     | *1.* The Central System notifies the Charge Point that it needs to update its firmware. +
+                                      *2.* The Central System sends an UpdateFirmware.req PDU to instruct the Charge Point to install new firmware. +
+                                      *3.* Upon receipt of an UpdateFirmware.req PDU, the Charge Point SHALL respond with a UpdateFirmware.conf PDU. +
+                                      *4.* The Charge Point retrieves the firmware and starts installing it.
+|       | _Alternative scenarios_   |
+|*5*    | *Prerequisites*          | *1.* If an firmware update is needed.
+                                      *2.* The Central System shall inform the Charge Point of the time at which the Charge Point can start downloading the firmware.
+                                      *3.* The Charge Point shall notify the Central System after each step as it downloads and installs the new firmware.
+                                      *4.* Upon receipt of an UpdateFirmware.req PDU, the Charge Point SHALL respond with a UpdateFirmware.conf PDU.
+                                      *5.* The Charge Point shall send notifications to inform the Central System about the progress of the firmware update.
+|*6*    | *Postconditions*      | *Successful postconditions:*: _Succesfull installation of new firmware_ +
+                                      *Failure postconditions:* _Unsuccesfull installation of new firmware_
+|*7*    | *Sequence diagram*       |
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                |
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+|=======================================================================
+| *CH*  | *FR/NF/C*| Pre-condition                                                                       | *ID*       | *Requirement definition*                                                                                                     | *M/O/C* | *Messages*      | *Rationale* | *Note* |
+| 3.2 | FR      |                                                                                     | FR04.001 | The core profile of OCPP 1.6 shall be implemented.                                                                         | M     |               |           |      |
+| 3.3 | FR      |                                                                                     | FR04.002 | The Charge Point  shall inform the Central System that the charging has been stopped.                                      | M     |               |           |      |
+| 3.3 | C       | if the presented idTag is the same as the idTag presented to start the transaction. | FR04.003 | The Charge Point shall not send an Authorize.req before stopping a transaction if the                                      | N     | Authorize.req |           |      |
+| 3.3 | FR      | If an firmware update is needed.                                                    | FR04.004 | The Charge Point shall be updated with new firmware.                                                                       | M     |               |           |      |
+| 3.3 | FR      |                                                                                     | FR04.005 | The Central System shall inform the Charge Point of the time at which the Charge Point can start downloading the firmware. | M     |               |           |      |
+| 3.3 | FR      |                                                                                     | FR04.006 | The Charge Point shall notify the Central System after each step as it downloads and installs the new firmware.            | M     |               |           |      |
+|=======================================================================
+<insert Sequence diagram>
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+<<<
+[[Data_Types]]
+== DataTypes
+
+
+<<<
+[[ConfigurationKeys]]
+== ConfigurationKeys

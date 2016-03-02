@@ -1,0 +1,95 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Update Local Authorization List
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+activate EV
+activate CP
+EV ->o CP: Present identification()
+
+
+    opt if supported
+    CP ->o CP: check local authorization list()
+    end
+
+    opt if supported
+    CP ->o CP: check local authorization list()
+    end
+
+alt LocalAuthorizeOffline=true & (Id in cache or (Id\nin local list & Valid)) or (AllowOfflineTxForUnknownId=true\n& Id not Invalid in local list)
+
+CP ->o CP: check local authorization list()
+alt if not found
+  alt valid
+  CP ->o]: Continue regular charging session
+  end
+
+  alt not valid
+  CP --> EV: optional notification()
+  CP ->o CP: return to idle state
+  end
+end
+
+
+
+    alt not found in local authorization list and LocalPreAuthorize = true
+    CP ->o CP: check authorization cache()
+
+    alt if not found and valid
+    CP ->o]: Continue regular charging session
+    |||
+    end
+
+  alt not found
+  CP -> CS: Authorize.req()
+  activate CS
+  CS -> CP: Authorize.conf()
+  deactivate CS
+      alt if accepted
+      CP ->o]: Continue regular charging session
+      |||
+      end
+
+      alt if not acccepted
+      CP --> EV: optional notification()
+      CP ->o CP: return to idle state
+      |||
+
+      end
+deactivate CP
+      ||||
+  end
+  |||
+end
+
+  alt not found in local authorization list and LocalPreAuthorize = false
+
+    activate CS
+    CP -> CS: Authorize.req()
+    activate CP
+    CS -> CP: Authorize.conf()
+    deactivate CS
+    deactivate CP
+    alt if valid
+    CP ->o]: Continue regular charging session
+    end
+    alt if not valid
+    CP -->o EV: optional notification()
+    activate CP
+    CP ->o CP: return to idle state
+
+    end
+    deactivate CP
+    ||||||
+  end
+
+deactivate EV
+
+
+@enduml

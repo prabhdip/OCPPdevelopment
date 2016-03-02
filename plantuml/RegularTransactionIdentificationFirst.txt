@@ -1,0 +1,71 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Regular Transaction - Identification First
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+EV -> CP : Present identification()
+activate EV #E6E6E6
+activate CP #FFFFFF
+CP -> CS :Authorize.req
+activate CS
+CS --> CP :Authorize.conf(Accpedred)
+deactivate CS
+CP --> EV : optional notification()
+deactivate EV
+
+
+CP -> CS: StatusNotification.req(Preparing)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+deactivate CP
+
+
+alt if within ConnectionTimeOUt
+
+
+EV -> CP : Plugin cable()
+activate EV #E6E6E6
+activate CP #FFFFFF
+
+opt if cable not permanently attached #F5D0A9
+CP ->o CP: Lock connector()
+end
+
+CP ->o CP: start EnergyOffer()
+
+CP -> CS : StatusNotification.req(Charging)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+CP -> CS: StartTransaction.req()
+activate CS
+CS -->CP: StartTransaction.conf(charging session)
+
+CP -->o] : Continue regular charging session
+deactivate EV
+deactivate CP
+|||
+end
+
+alt if not within Connection Timeout
+activate CP
+CP -> CS: StatusNotification.req(status = Available)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+end
+deactivate CP
+CP -->o EV : optional notification()
+|||
+
+
+
+
+@enduml

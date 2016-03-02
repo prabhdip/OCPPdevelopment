@@ -1,0 +1,360 @@
+<<<
+[[UseCases]]
+== <Use cases>
+
+===  UC.XX - Status Notification
+
+Functional block: B. Transactions +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Status Notification
+|*2*    | *ID*                     | UC.XX
+|*3*    | *Objective(s)*           | To inform the Central System about a status change or an error within the Charge Point.
+|*4*    | *Description*            | This use case covers the functionality that a Charge Point sends a notification
+                                     to the Central System to inform the Central System about a status change or an error within the Charge Point.
+|       | _Actors_                 | Charge Point, Central System
+|       | _Scenario description_   |
+                                     *1.* A Charge Point sends a no tification to the Central System to inform the Central System about a status change
+                                     or an error within the Charge Point.
+                                     *2.*  The Charge Point MAY send a <<statusnotification.req,StatusNotification.req>> PDU to the Central System.
+
+|       | _Alternative scenarios_  | *1.* Diagnostics Status Notification (see UC.XX GetDiagnostics) +
+                                     *2.* Firmware Status Notification. (see UC.XX Download Firmware)
+|*5*    | *Prerequisites*          | The Profile _Reservation_ is installed.
+|*6*    | *Postconditions*         |
+|*7*    | *Sequence diagram*       |
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                |  *[NOTE]* +
+                                      EVSE is used in Status Notification instead of Socket or Charge Point
+                                      for future compatibility.
+
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+|*ID.*       |*Precondition*        | *Requirement*                            | *M/O/C*
+
+| 4.9 | FR | Upon receipt of a StartTransaction.req PDU. |   | The Charge Point shall send a notification to the Central System to inform the Central System about a status change or an error within the Charge Point. | M | |
+| 4.9 | FR | Upon receipt of a StartTransaction.req PDU. |   | This response PDU shall include a transaction id and an authorization status value. | M |   |
+| 4.9 | FR |                                             |   | A Charge Point Connector shall have any of the 9 statuses.                          | O |   |
+
+
+
+
+
+|*FR.01.XXX* |                      |                                          |
+|*FR.01.XXX* |                      |                                          |
+|=======================================================================
+
+<<<
+The following table describes which status transitions are possible:
+
+[width="100%", cols="1,2,^1,^1,^1,^1,^1,^1,^1,^1,^1,^1",options="noheader"]
+|=======================================================================
+|| |*1*
+[small]#Available# |*2*
+[small]#Preparing# |*3*
+[small]#Charging# |*4*
+[small]#SuspendedEV# |*5*
+[small]#SuspendedEVSE# |*6*
+[small]#Finishing# ||*7*
+[small]#Reserved# |*8*
+[small]#Unavailable# |*9*
+[small]#Faulted#
+|{set:cellbgcolor:lightgrey} *A*|[small]#Available#
+|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *A2*|*A3*|*A4*|*A5*|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgrey}|{set:cellbgcolor:lightgreen} *A7*|*A8*|*A9*
+|{set:cellbgcolor:lightgrey} *B*|[small]#Preparing#
+|{set:cellbgcolor:lightgreen} *B1*|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *B3*|*B4*|*B5*|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgrey}|||{set:cellbgcolor:lightgreen} *B9*
+|{set:cellbgcolor:lightgrey} *C*|[small]#Charging#
+|{set:cellbgcolor:lightgreen} *C1*|{set:cellbgcolor:lightgray}||{set:cellbgcolor:lightgreen} *C4*|*C5*|*C6*|{set:cellbgcolor:lightgrey}|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *C8*|*C9*
+|{set:cellbgcolor:lightgrey} *D*|[small]#SuspendedEV#
+|{set:cellbgcolor:lightgreen} *D1*|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *D3*|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *D5*|*D6*|{set:cellbgcolor:lightgrey}|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *D8*|*D9*
+|{set:cellbgcolor:lightgrey} *E*|[small]#SuspendedEVSE#
+|{set:cellbgcolor:lightgreen} *E1*|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *E3*|*E4*|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *E6*|{set:cellbgcolor:lightgrey}|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *E8*|*E9*
+|{set:cellbgcolor:lightgrey} *F*|[small]#Finishing#
+|{set:cellbgcolor:lightgreen} *F1*|*F2*|{set:cellbgcolor:lightgray}||||{set:cellbgcolor:lightgrey}|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *F8*|*F9*
+|{set:cellbgcolor:lightgrey}|||||||||||
+|{set:cellbgcolor:lightgrey} *G*|[small]#Reserved#
+|{set:cellbgcolor:lightgreen} *G1*|*G2*|{set:cellbgcolor:lightgray}||||{set:cellbgcolor:lightgrey}|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgreen} *G8*|*G9*
+|{set:cellbgcolor:lightgrey} *H*|[small]#Unavailable#
+|{set:cellbgcolor:lightgreen} *H1*|*H2*|*H3*|*H4*|*H5*|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgrey}|{set:cellbgcolor:lightgray}||{set:cellbgcolor:lightgreen} *H9*
+|{set:cellbgcolor:lightgrey} *I*|[small]#Faulted#
+|{set:cellbgcolor:lightgreen} *I1*|*I2*|*I3*|*I4*|*I5*|*I6*|{set:cellbgcolor:lightgrey}|{set:cellbgcolor:lightgreen} *I7*|*I8*|{set:cellbgcolor:lightgray}
+|=======================================================================
+[NOTE]
+The table above is only applicable to ConnectorId > 0. For ConnectorId 0, only a limited set is applicable, namely: Available, Unavailable and Faulted.
+
+The next table describes events that may lead to a status change:
+[width="100%", cols=",",options="noheader"]
+|=======================================================================
+|{set:cellbgcolor:lightgray}|{set:cellbgcolor:lightgrey}Not possible
+|{set:cellbgcolor:lightgreen} *A2*|{set:cellbgcolor:lightgrey} Usage is initiated (e.g. insert plug, bay occupancy detection, present idTag, push start button, receipt of a <<remotestarttransaction.req,RemoteStartTransaction.req>>)
+|{set:cellbgcolor:lightgreen} *A3*|{set:cellbgcolor:lightgrey} Can be possible in a Charge Point without an authorization means
+|{set:cellbgcolor:lightgreen} *A4*|{set:cellbgcolor:lightgrey} Similar to `A3` but the EV does not start charging
+|{set:cellbgcolor:lightgreen} *A5*|{set:cellbgcolor:lightgrey} Similar to `A3` but the EVSE does not allow charging
+|{set:cellbgcolor:lightgreen} *A7*|{set:cellbgcolor:lightgrey} A <<reserve-now,Reserve Now>> message is received that reserves the connector
+|{set:cellbgcolor:lightgreen} *A8*|{set:cellbgcolor:lightgrey} A <<change-availability,Change Availability>> message is received that sets the connector to _Unavailable_
+|{set:cellbgcolor:lightgreen} *A9*|{set:cellbgcolor:lightgrey} A fault is detected that prevents further charging operations
+||
+|{set:cellbgcolor:lightgreen} *B1*|{set:cellbgcolor:lightgrey} Intended usage is ended (e.g. plug removed, bay no longer occupied, second presentation of idTag, time out on expected user action)
+|{set:cellbgcolor:lightgreen} *B3*|{set:cellbgcolor:lightgrey} All prerequisites for charging are met and charging process starts
+|{set:cellbgcolor:lightgreen} *B4*|{set:cellbgcolor:lightgrey} All prerequisites for charging are met but EV does not start charging
+|{set:cellbgcolor:lightgreen} *B5*|{set:cellbgcolor:lightgrey} All prerequisites for charging are met but EVSE does not allow charging
+|{set:cellbgcolor:lightgreen} *B9*|{set:cellbgcolor:lightgrey} A fault is detected that prevents further charging operations
+||
+|{set:cellbgcolor:lightgreen} *C1*|{set:cellbgcolor:lightgrey} Charging session ends while no user action is required (e.g. fixed cable was removed on EV side)
+|{set:cellbgcolor:lightgreen} *C4*|{set:cellbgcolor:lightgrey} Charging stops upon EV request (e.g. S2 is opened)
+|{set:cellbgcolor:lightgreen} *C5*|{set:cellbgcolor:lightgrey} Charging stops upon EVSE request (e.g. smart charging restriction, transaction is invalidated by the <<authorizationstatus,AuthorizationStatus>> in a <<starttransaction.conf,StartTransaction.conf>>)
+|{set:cellbgcolor:lightgreen} *C6*|{set:cellbgcolor:lightgrey} Charging session is stopped by user or a <<remotestoptransaction.req,Remote Stop Transaction>> message and further user action is required (e.g. remove cable, leave parking bay)
+|{set:cellbgcolor:lightgreen} *C8*|{set:cellbgcolor:lightgrey} Charging session ends, no user action is required and the connector is scheduled to become _Unavailable_
+|{set:cellbgcolor:lightgreen} *C9*|{set:cellbgcolor:lightgrey} A fault is detected that prevents further charging operations
+||
+|{set:cellbgcolor:lightgreen} *D1*|{set:cellbgcolor:lightgrey} Charging session ends while no user action is required
+|{set:cellbgcolor:lightgreen} *D3*|{set:cellbgcolor:lightgrey} Charging resumes upon request of the EV (e.g. S2 is closed)
+|{set:cellbgcolor:lightgreen} *D5*|{set:cellbgcolor:lightgrey} Charging is suspended by EVSE (e.g. due to a smart charging restriction)
+|{set:cellbgcolor:lightgreen} *D6*|{set:cellbgcolor:lightgrey} Charging session is stopped and further user action is required
+|{set:cellbgcolor:lightgreen} *D8*|{set:cellbgcolor:lightgrey} Charging session ends, no user action is required and the connector is scheduled to become _Unavailable_
+|{set:cellbgcolor:lightgreen} *D9*|{set:cellbgcolor:lightgrey} A fault is detected that prevents further charging operations
+||
+|{set:cellbgcolor:lightgreen} *E1*|{set:cellbgcolor:lightgrey} Charging session ends while no user action is required
+|{set:cellbgcolor:lightgreen} *E3*|{set:cellbgcolor:lightgrey} Charging resumes because the EVSE restriction is lifted
+|{set:cellbgcolor:lightgreen} *E4*|{set:cellbgcolor:lightgrey} The EVSE restriction is lifted but the EV does not start charging
+|{set:cellbgcolor:lightgreen} *E6*|{set:cellbgcolor:lightgrey} Charging session is stopped and further user action is required
+|{set:cellbgcolor:lightgreen} *E8*|{set:cellbgcolor:lightgrey} Charging session ends, no user action is required and the connector is scheduled to become _Unavailable_
+|{set:cellbgcolor:lightgreen} *E9*|{set:cellbgcolor:lightgrey} A fault is detected that prevents further charging operations
+||
+|{set:cellbgcolor:lightgreen} *F1*|{set:cellbgcolor:lightgrey} All user actions completed
+|{set:cellbgcolor:lightgreen} *F2*|{set:cellbgcolor:lightgrey} User restart charging session (e.g. reconnects cable, presents idTag again)
+|{set:cellbgcolor:lightgreen} *F8*|{set:cellbgcolor:lightgrey} All user actions completed and the connector is scheduled to become _Unavailable_
+|{set:cellbgcolor:lightgreen} *F9*|{set:cellbgcolor:lightgrey} A fault is detected that prevents further charging operations
+||
+|{set:cellbgcolor:lightgreen} *G1*|{set:cellbgcolor:lightgrey} Reservation expires or a <<cancel-reservation,Cancel Reservation>> message is received
+|{set:cellbgcolor:lightgreen} *G2*|{set:cellbgcolor:lightgrey} Reservation identity is presented
+|{set:cellbgcolor:lightgreen} *G8*|{set:cellbgcolor:lightgrey} Reservation expires or a <<cancel-reservation,Cancel Reservation>> message is received and the connector is scheduled to become _Unavailable_
+|{set:cellbgcolor:lightgreen} *G9*|{set:cellbgcolor:lightgrey} A fault is detected that prevents further charging operations
+||
+|{set:cellbgcolor:lightgreen} *H1*|{set:cellbgcolor:lightgrey} Connector is set _Available_ by a <<change-availability,Change Availability>> message
+|{set:cellbgcolor:lightgreen} *H2*|{set:cellbgcolor:lightgrey} Connector is set _Available_ after a user had interacted with the Charge Point
+|{set:cellbgcolor:lightgreen} *H3*|{set:cellbgcolor:lightgrey} Connector is set _Available_ and no user action is required to start charging
+|{set:cellbgcolor:lightgreen} *H4*|{set:cellbgcolor:lightgrey} Similar to `H3` but the EV does not start charging
+|{set:cellbgcolor:lightgreen} *H5*|{set:cellbgcolor:lightgrey} Similar to `H3` but the EVSE does not allow charging
+|{set:cellbgcolor:lightgreen} *H9*|{set:cellbgcolor:lightgrey} A fault is detected that prevents further charging operations
+||
+|{set:cellbgcolor:lightgreen} *I1-I8*|{set:cellbgcolor:lightgrey} Fault is resolved and status returns to the pre-fault state
+|=======================================================================
+
+
+<<<
+[[Messages]]
+== Messages
+
+[[authorize.req]]
+=== Authorize.req
+
+This contains the field definition of the Authorize.req PDU sent by the
+Charge Point to the Central System.
+See also <<authorize>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*idTag* |<<idtoken,IdToken>> |1..1 |Required. This contains the identifier that
+needs to be authorized.
+|=======================================================================
+
+[[authorize.conf]]
+=== Authorize.conf
+
+This contains the field definition of the Authorize.conf PDU sent by the
+Central System to the Charge Point in response to a <<authorize.req,Authorize.req>> PDU.
+See also <<authorize>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*idTagInfo* |<<idtaginfo,IdTagInfo>> |1..1 |Required. This contains information about
+authorization status, expiry and parent id.
+|=======================================================================
+
+[[cancelreservation.req]]
+=== CancelReservation.req
+This contains the field definition of the CancelReservation.req PDU sent
+by the Central System to the Charge Point.
+See also <<cancel-reservation>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*reservationId* |integer |1..1 |Required. Id of the reservation to
+cancel.
+|=======================================================================
+
+[[cancelreservation.conf]]
+=== CancelReservation.conf
+This contains the field definition of the CancelReservation.conf PDU
+sent by the Charge Point to the Central System in response to a
+<<cancelreservation.req,CancelReservation.req>> PDU.
+See also <<cancel-reservation>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<cancelreservationstatus,CancelReservationStatus>> |1..1 |Required. This indicates the
+success or failure of the cancelling of a reservation by Central System.
+|=======================================================================
+
+[[changeavailability.req]]
+=== ChangeAvailability.req
+This contains the field definition of the ChangeAvailability.req PDU
+sent by the Central System to the Charge Point.
+See also <<change-availability>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*connectorId*|integer connectorId >= 0
+
+ |1..1 |Required. The id of the connector for which availability needs
+to change. Id '0' (zero) is used if the availability of the Charge Point and all its connectors needs to change.
+
+|*type* |<<availabilitytype,AvailabilityType>> |1..1 |Required. This contains the type of
+availability change that the Charge Point should perform.
+|=======================================================================
+
+[[changeavailability.conf]]
+=== ChangeAvailability.conf
+This contains the field definition of the ChangeAvailability.conf PDU
+return by Charge Point to Central System.
+See also <<change-availability>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<availabilitystatus,AvailabilityStatus>> |1..1 |Required. This indicates whether
+the Charge Point is able to perform the availability change.
+|=======================================================================
+
+[[remotestarttransaction.req]]
+=== RemoteStartTransaction.req
+This contains the field definitions of the RemoteStartTransaction.req
+PDU sent to Charge Point by Central System.
+See also <<remote-start-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*connectorId* a|integer |0..1 |Optional. Number of the connector on
+which to start the transaction. connectorId SHALL be > 0
+|*idTag* |<<idtoken,IdToken>> |1..1 |Required. The identifier that Charge Point must
+use to start a transaction.
+|*chargingProfile*| <<chargingprofile,ChargingProfile>> | 0..1 |
+Optional. Charging Profile to be used by the Charge Point for the requested
+transaction. <<chargingprofilepurposetype,ChargingProfilePurpose>>
+MUST be set to <<txprofile,TxProfile>>
+|=======================================================================
+
+[[remotestarttransaction.conf]]
+=== RemoteStartTransaction.conf
+This contains the field definitions of the RemoteStartTransaction.conf
+PDU sent from Charge Point to Central System.
+See also <<remote-start-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<remotestartstopstatus,RemoteStartStopStatus>> |1..1 |Required. Status indicating
+whether Charge Point accepts the request to start a transaction.
+|=======================================================================
+
+[[remotestoptransaction.req]]
+=== RemoteStopTransaction.req
+This contains the field definitions of the RemoteStopTransaction.req PDU
+sent to Charge Point by Central System.
+See also <<remote-stop-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*transactionId* |integer |1..1 |Required. The identifier of the
+transaction which Charge Point is requested to stop.
+|=======================================================================
+
+[[remotestoptransaction.conf]]
+=== RemoteStopTransaction.conf
+This contains the field definitions of the RemoteStopTransaction.conf
+PDU sent from Charge Point to Central System.
+See also <<remote-stop-transaction>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<remotestartstopstatus,RemoteStartStopStatus>> |1..1 |Required. Status indicating
+whether Charge Point accepts the request to stop a transaction.
+|=======================================================================
+
+
+
+
+
+
+[[reservenow.req]]
+=== ReserveNow.req
+This contains the field definition of the ReserveNow.req PDU sent by the
+Central System to the Charge Point.
+See also <<reserve-now>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*connectorId* a|
+integer
+
+connectorId >= 0
+
+ |1..1 |Required. This contains the id of the connector to be reserved.
+A value of 0 means that the reservation is not for a specific connector.
+
+|*expiryDate* |dateTime |1..1 |Required. This contains the date and
+time when the reservation ends.
+
+|*idTag* |<<idtoken,IdToken>> |1..1 |Required. The identifier for which the Charge
+Point has to reserve a connector.
+
+|*parentIdTag* |<<idtoken,IdToken>> |0..1 |Optional. The parent idTag.
+
+|*reservationId* |integer |1..1 |Required. Unique id for this
+reservation.
+|=======================================================================
+
+[[reservenow.conf]]
+=== ReserveNow.conf
+This contains the field definition of the ReserveNow.conf PDU sent by
+the Charge Point to the Central System in response to a <<reservenow.req,ReserveNow.req>>
+PDU.
+See also <<reserve-now>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<reservationstatus,ReservationStatus>> |1..1 |Required. This indicates the
+success or failure of the reservation.
+|=======================================================================
+
+===========================================================
+
+
+
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys

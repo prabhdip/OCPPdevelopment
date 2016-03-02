@@ -1,0 +1,33 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Cold Boot Charge Point (pending)
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+activate CP
+CP  -> CS :  BootNotification.req()
+activate CS
+CS  --> CP :  BootNotification.conf(status = Pending, interval = x)
+deactivate CS
+
+opt
+CP  -> CS :  (Non-Transaction related request)
+activate CS
+CS  —> CP :  (Non-Transaction related response)
+deactivate CS
+end
+
+loop with interval X while "Pending"
+CP  -> CS :  BootNotification.req()
+activate CS
+CS  --> CP :  BootNotification.conf(status = Pending, interval = x)
+deactivate CS
+end
+
+
+deactivate CP
+
+@enduml

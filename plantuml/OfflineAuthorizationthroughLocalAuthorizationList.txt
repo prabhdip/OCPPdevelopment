@@ -1,0 +1,17 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+Title Offline Authorization through Local Authorization List
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+ 
+CS -> CP: SendLocalList.req(**listVersion: 234**, ** updateType: Full**, [localAuthorizationList])
+activate CP
+activate CS
+CP --> CS: SendLocalList.conf(**status: Accepted**)
+
+deactivate CS
+deactivate CP
+@enduml

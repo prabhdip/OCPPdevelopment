@@ -1,0 +1,17 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Get Local List Version
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CP -> CS: GetLocalListVersion.req()
+activate CP
+activate CS
+CS --> CP: GetLocalListVersion.conf(Version)
+deactivate CS
+deactivate CP
+
+@enduml

@@ -1,0 +1,39 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+activate EV
+
+EV -> CS:  reserve
+activate CS
+CS -> CP: ReserveNow.req(reservationId)
+deactivate CS
+activate CP
+CP --> CS: ReserveNow.conf(Accpeted)
+deactivate CS
+
+
+
+
+CP ->o CP: lock connector attemd()
+
+
+CP -> CS: StatusNotification.req(Preparing, errorCode = ConnectorLockFailure)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+
+CP --> EV: optional notification()
+
+
+deactivate CP
+deactivate EV
+
+
+
+
+@enduml

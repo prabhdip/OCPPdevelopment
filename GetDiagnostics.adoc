@@ -1,0 +1,173 @@
+<<<
+[[UseCases]]
+== <Use cases>
+
+===  UC.XX - Get Diagnostics +
+
+Functional Block: C. Remote Commands +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Get Diagnostics
+|*2*    | *ID*                     | UC.XX
+|*3*    | *Objective(s)*           | To request the Charge Point for for diagnostic information.
+|*4*    | *Description*            | This use case covers the functionality of getting the diagnostics of a Charge Point.
+                                     The Central System  requests a Charge Point for diagnostic information.
+|       | _Actors_                 | Charge Point, Central System
+|       | _Scenario description_   |
+                                      *1.* The Central System requests a Charge Point for diagnostic information. +
+                                      *2.* The Central System sends a <<getdiagnostics.req,GetDiagnostics.req>> PDU for getting
+                                      diagnostic information of a Charge Point with a location where the Charge
+                                      Point uploads its diagnostic data to and optionally a begin and end
+                                      time for the requested diagnostic information. +
+                                      *3.* Upon receipt of a <<getdiagnostics.req,GetDiagnostics.req>> PDU, and if diagnostics information
+                                      is available then Charge Point responds with a
+                                      <<getdiagnostics.conf,GetDiagnostics.conf>> PDU stating the name of the
+                                      file containing the diagnostic information that will be uploaded. +
+                                      *4*. The  Charge Point uploads a single file. The format of the diagnostics file is not prescribed.
+|       | _Alternative scenarios_  |
+|*5*    | *Prerequisites*          | The Profile _Firmware Management_ is installed.
+|*6*    | *Postconditions*         | *Successful postcondition:* +
+                                     The upload of diagnostics is busy or has finished _successfully_. +
+                                     *Failure postcondition:* +
+                                     The upload of diagnostics is busy or has finished _failed_.
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+image::GetDiagnostics.png["Get Diagnostics",scaledwidth="95%"]
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*8*    | *Error handling*         | If no diagnostics file is available, then <<getdiagnostics.conf,GetDiagnostics.conf>> SHALL NOT contain a file name.
+|*9*    | *Remarks*                |
+                                     When a Charge Point is requested to upload a diagnostics file, the Central
+                                     System supplies in the request an URL where the Charge Point should upload
+                                     the file. The URL also contains the protocol which must be used to
+                                     upload the file. +
+
+                                     It is recommended that the diagnostics file is downloaded via FTP or FTPS.
+                                     FTP(S) is better optimized for large binary data than HTTP. Also FTP(S)
+                                     has the ability to resume uploads. In case an upload is interrupted, the
+                                     Charge Point can resume uploading after the part it already has uploaded.
+                                     The FTP URL is of format: __ftp:__//__user__:__password__@__host__:__port__/_path_ in
+                                     which the parts __user__:__password__@, :__password__ or :__port__ may
+                                     be excluded.
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                                                               | *ID* | *Requirement definition*                                                                                                                                                          | *M/O/C* | *Rationale* | *Note*
+| 4.4 | FR |                                                                               |    | The Charge Point shall a send notification to inform the Central System about the status of a diagnostics upload.                                                                    | M     |           |
+| 4.4 | FR |                                                                               |    | The Charge Point shall send a DiagnosticsStatusNotification.req PDU to inform the Central System that the upload of diagnostics is busy or has finished successfully or failed. | M     |           |
+| 4.4 | FR | After receipt of a TriggerMessage. When it is not busy uploading diagnostics. |    | The Charge Point shall only send the status _Idle_ after receipt of a TriggerMessage for a Diagnostics Status Notification.                                                       | M     |           |
+| 4.4 | FR | Upon receipt of a DiagnosticsStatusNotification.req PDU.                      |    | The Central System shall respond with a <<DiagnosticsStatusNotification.conf,DiagnosticsStatusNotification.conf>>.                                                                                                     | M     |           |
+| 5.9 | FR |                                                                                        |    | The Central System can request a Charge Point for diagnostic information.                                                                               | C     |           |
+| 5.9 | FR |                                                                                        |    | The Central System shall send a <<DiagnosticsStatusNotification.req,DiagnosticsStatusNotification.req>>PDU for getting diagnostic information of a Charge Point.                                            | M     |           |
+| 5.9 | FR |                                                                                        |    | The Charge Point MUST upload its diagnostic data to and optionally a begin and end time for the requested diagnostic information.                       | M     |           |
+| 5.9 | FR | Upon receipt of a GetDiagnostics.req PDU, and if diagnostics information is available. |    | The Charge Point shall respond with a <<DiagnosticsStatusNotification.conf,DiagnosticsStatusNotification.conf>> PDU stating the name of the file containing the diagnostic information that will be uploaded. | M     |           |
+| 5.9 | FR | Upon receipt of a GetDiagnostics.req PDU, and if diagnostics information is available. |    | The Charge Point shall upload a single file.                                                                                                            | M     |           | Format of the diagnostics file is not prescribed.
+|=======================================================================
+| 5.9 | C       | If no diagnostics file is available.                                                   |    | <<DiagnosticsStatusNotification.conf,DiagnosticsStatusNotification.conf>> shall NOT contain a file name.                                                                                                  | N     |           | Format of the diagnostics file is not prescribed.
+|=======================================================================
+
+<<<
+[[Messages]]
+== Messages
+
+[[getdiagnostics.req]]
+=== GetDiagnostics.req
+This contains the field definition of the GetDiagnostics.req PDU sent by
+the Central System to the Charge Point.
+See also <<get-diagnostics>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*location* |anyURI |1..1 |Required. This contains the location
+(directory) where the diagnostics file shall be uploaded to.
+
+|*retries* |integer |0..1 |Optional. This specifies how many times Charge
+Point must try to upload the diagnostics before giving up. If this field
+is not present, it is left to Charge Point to decide how many times it
+wants to retry.
+
+|*retryInterval* |integer |0..1 |Optional. The interval in seconds after
+which a retry may be attempted. If this field is not present, it is left
+to Charge Point to decide how long to wait between attempts.
+
+|*startTime* |dateTime |0..1 |Optional. This contains the date and time
+of the oldest logging information to include in the diagnostics.
+
+|*stopTime* |dateTime |0..1 |Optional. This contains the date and time
+of the latest logging information to include in the diagnostics.
+|=======================================================================
+
+[[getdiagnostics.conf]]
+=== GetDiagnostics.conf
+This contains the field definition of the GetDiagnostics.conf PDU sent
+by the Charge Point to the Central System in response to a
+<<getdiagnostics.req,GetDiagnostics.req>> PDU.
+See also <<get-diagnostics>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*fileName* |<<cistring255type, CiString255Type>> |0..1 |Optional. This contains the name of the
+file with diagnostic information that will be uploaded. This field
+is not present when no diagnostic information is available.
+|=======================================================================
+
+[[diagnosticsstatusnotification.req]]
+=== DiagnosticsStatusNotification.req
+This contains the field definition of the
+DiagnosticsStatusNotification.req PDU sent by the Charge Point to the
+Central System.
+See also <<diagnostics-status-notification>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<diagnosticsstatus,DiagnosticsStatus>> |1..1 |Required. This contains the status
+of the diagnostics upload.
+|=======================================================================
+
+[[diagnosticsstatusnotification.conf]]
+=== DiagnosticsStatusNotification.conf
+This contains the field definition of the
+DiagnosticsStatusNotification.conf PDU sent by the Central System to the
+Charge Point in response to a <<diagnosticsstatusnotification.req,DiagnosticsStatusNotification.req>> PDU.
+See also <<diagnostics-status-notification>>
+
+No fields are defined.
+
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+[[diagnosticsstatus]]
+=== DiagnosticsStatus
+_Enumeration_
+
+Status in <<diagnosticsstatusnotification.req,DiagnosticsStatusNotification.req>>.
+
+[cols=",",options="header",]
+|======================================================
+|*Value* |*Description*
+|*Idle*| Charge Point is not performing diagnostics related tasks. Status Idle SHALL only be used as in a <<diagnosticsstatusnotification.req,DiagnosticsStatusNotification.req>> that was triggered by a <<triggermessage.req,TriggerMessage.req>>
+|*Uploaded* |Diagnostics information has been uploaded.
+|*UploadFailed* |Uploading of diagnostics failed.
+|*Uploading* | File is being uploaded.
+|======================================================
+
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys
+
+
+No fields are defined.

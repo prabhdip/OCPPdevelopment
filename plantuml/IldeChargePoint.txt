@@ -1,0 +1,51 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Idle Charge Point
+
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+  loop while power up and no other messages
+  activate CP
+  CP -> CS: Heartbeat.req
+  activate CS
+  CS --> CP: Heartbeat.conf
+  deactivate CS
+  end
+
+  CP ->o CP: Connection loss()
+
+  note over CS, CP
+  Connection loss can be minutes, but can also be days.
+  end note
+
+
+
+
+  loop while power up and no other messages
+  CP -> CS: Heartbeat.req
+  activate CS
+  CS --> CP: Heartbeat.conf
+  deactivate CS
+  end
+
+  loop while power up and no other messages
+  CP -> CS: StatusNotification.req(Preparing)
+  activate CS
+  CS --> CP: StatusNotification.conf()
+  deactivate CS
+  deactivate CP
+  end
+
+note right of CP
+It is advisable in case of a
+longer offline situation to
+let the backoffice know the
+current availability of the
+Connectors.
+end note
+
+@enduml

@@ -1,0 +1,81 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Remote start transaction – Remote Start First\n\n Remark:\n
+It is advised not to start transactions remotely without connector ID due to\n
+the uncertainty which connector is started. In case of a logic controller with\n
+many connectors, the user might not be in front of the activated connector.
+
+actor "External Trigger" as ET
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+Note left : An external trigger can be\nfor example a Charge Point\nOperator or a user app.
+
+
+
+ET -> CS:  remote start()
+activate EV
+activate CS
+CS  -> CP:  RemotestartTransaction.req()
+activate CP
+
+opt AuthorizeRemoteTxRequests = true
+CP -> CS :Authorize.req
+activate CS
+CS --> CP :Authorize.conf
+deactivate CS
+end
+
+CP --> CS: RemotestartTransaction.conf()
+deactivate EV
+
+CS --> ET: optional notification
+
+CP -> CS: StatusNotification.req(Preparing)
+activate CS
+CS --> CP: StatusNotfication.conf()
+deactivate CS
+
+
+alt within ConnectionTimeOut
+
+EV -> CP : Plugin cable()
+activate EV
+
+
+opt if cable not permanently attached
+CP ->o CP : lock connector()
+end
+
+CP ->o CP : start EnergyOffer()
+
+CP -> CS: StatusNotification.req(Charging)
+activate CS
+CS --> CP: StatusNotfication.conf()
+deactivate CS
+
+CP -> CS: startTransaction.req()
+activate CS
+CS --> CP: startTransaction.conf()
+deactivate CS
+
+
+CP ->o] : Continue regular charging session
+deactivate EV
+
+alt not within ConnectionTimeOut
+CP -> CS: StatusNotification.req(status = Available)
+activate CS
+CS --> CP: StatusNotfication.conf()
+deactivate CS
+CS --> ET: optional notification
+end
+
+end
+
+
+
+@enduml

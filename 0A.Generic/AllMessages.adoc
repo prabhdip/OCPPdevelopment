@@ -1,0 +1,57 @@
+:numbered:
+:toc: macro
+
+= All Messages
+
+[cols="^1,1,3",options="header",]
+|=======================================================================
+| CH  |  Message                            | Description
+| 6.1 | Authorize.req                       | This contains the field definition of the Authorize.req
+| 6.2 | Authorize.conf                      | This contains the field definition of the Authorize.conf
+| 6.3 | BootNotification.req                | This contains the field definition of the BootNotification.req PDU sent by the Charge Point to the Central System. See also <<boot-notification>>
+| 6.4 | BootNotification.conf               | This contains the field definition of the BootNotification.conf PDU sent by the Central System to the Charge Point in response to a BootNotification.req PDU. See also <<boot-notification>>
+| 6.5 | CancelReservation.req               | This contains the field definition of the CancelReservation.req PDU sent by the Central System to the Charge Point. See also <<cancel-reservation>>
+| 6.6 | CancelReservation.conf              | This contains the field definition of the CancelReservation.conf PDU sent by the Charge Point to the Central System in response to a CancelReservation.req PDU. See also <<cancel-reservation>>
+| 6.7 | ChangeAvailability.req              | This contains the field definition of the ChangeAvailability.req PDU sent by the Central System to the Charge Point. See also <<change-availability>>
+| 6.8 | ChangeAvailability.conf             | This contains the field definition of the ChangeAvailability.conf PDU return by Charge Point to Central System. See also <<change-availability>>
+| 6.9 | ChangeConfiguration.req             | This contains the field definition of the ChangeConfiguration.req PDU sent by Central System to Charge Point. It is RECOMMENDED that the content and meaning of the 'key' and 'value' fields is agreed upon between Charge Point and Central System. See also <<change-configuration>>
+| 6.10 | ChangeConfiguration.conf           | This contains the field definition of the ChangeConfiguration.conf PDU returned from Charge Point to Central System. See also <<change-configuration>>
+| 6.12 | ClearCache.conf                    | This contains the field definition of the ClearCache.conf PDU sent by the Charge Point to the Central System in response to a ClearCache.req PDU. See also <<clear-cache>>
+| 6.13 | ClearChargingProfile.req           | This contains the field definition of the ClearChargingProfile.req PDU sent by the Central System to the Charge Point.
+| 6.14 | ClearChargingProfile.conf          | This contains the field definition of the ClearChargingProfile.conf PDU sent by the Charge Point to the Central System in response to a ClearChargingProfile.req PDU. See also <<clear-charging-profile>>
+| 6.15 | DataTransfer.req                   | This contains the field definition of the DataTransfer.req PDU sent either by the Central System to the Charge Point or vice versa. See also <<data-transfer>>
+| 6.16 | DataTransfer.conf                  | This contains the field definition of the DataTransfer.conf PDU sent by the Charge Point to the Central System or vice versa in response to a DataTransfer.req PDU. See also <<data-transfer>>
+| 6.17 | DiagnosticsStatusNotification.req  | This contains the field definition of the DiagnosticsStatusNotification.req PDU sent by the Charge Point to the Central System. See also <<diagnostics-status-notification>>
+| 6.19 | FirmwareStatusNotification.req     | This contains the field definition of the FirmwareStatusNotifitacion.req PDU sent by the Charge Point to the Central System. See also <<firmware-status-notification>>
+| 6.21 | GetCompositeSchedule.req           | This contains the field definition of the GetCompositeSchedule.req PDU sent by the Central System to the Charge Point. See also <<get-composite-schedule>>
+| 6.22 | GetCompositeSchedule.conf          | This contains the field definition of the GetCompositeSchedule.conf PDU sent by the Charge Point to the Central System in response to a GetCompositeSchedule.req PDU. See also <<get-composite-schedule>>
+| 6.23 | GetConfiguration.req               | This contains the field definition of the GetConfiguration.req PDU sent by the the Central System to the Charge Point. See also <<get-configuration>>
+| 6.24 | GetConfiguration.conf              | This contains the field definition of the GetConfiguration.conf PDU sent by Charge Point the to the Central System in response to a GetConfiguration.req. See also <<get-configuration>>
+| 6.25 | GetDiagnostics.req          | This contains the field definition of the GetDiagnostics.req PDU sent by the Central System to the Charge Point. See also <<get-diagnostics>>
+| 6.26 | GetDiagnostics.conf         | This contains the field definition of the GetDiagnostics.conf PDU sent by the Charge Point to the Central System in response to a GetDiagnostics.req PDU. See also <<get-diagnostics>>
+| 6.28 | GetLocalListVersion.conf    | This contains the field definition of the GetLocalListVersion.conf PDU sent by the Charge Point to Central System in response to a GetLocalListVersion.req PDU. See also <<get-local-list-version>>
+| 6.30 | Heartbeat.conf              | This contains the field definition of the Heartbeat.conf PDU sent by the Central System to the Charge Point in response to a Heartbeat.req PDU. See also <<heartbeat>>
+| 6.31 | MeterValues.req             | This contains the field definition of the MeterValues.req PDU sent by the Charge Point to the Central System. See also <<meter-values>>
+| 6.33 | RemoteStartTransaction.req  | This contains the field definitions of the RemoteStartTransaction.req PDU sent to Charge Point by Central System. See also <<remote-start-transaction>>
+| 6.34 | RemoteStartTransaction.conf | This contains the field definitions of the RemoteStartTransaction.conf PDU sent from Charge Point to Central System. See also <<remote-start-transaction>>
+| 6.35 | RemoteStopTransaction.req   | This contains the field definitions of the RemoteStopTransaction.req PDU sent to Charge Point by Central System. See also <<remote-stop-transaction>>
+| 6.36 | RemoteStopTransaction.conf  | This contains the field definitions of the RemoteStopTransaction.conf PDU sent from Charge Point to Central System. See also <<remote-stop-transaction>>
+| 6.37 | ReserveNow.req              | This contains the field definition of the ReserveNow.req PDU sent by the Central System to the Charge Point. See also <<reserve-now>>
+| 6.38 | ReserveNow.conf             | This contains the field definition of the ReserveNow.conf PDU sent by the Charge Point to the Central System in response to a ReserveNow.req PDU. See also <<reserve-now>>
+| 6.39 | Reset.req                   | This contains the field definition of the Reset.req PDU sent by the Central System to the Charge Point. See also <<reset>>
+| 6.40 | Reset.conf                  | This contains the field definition of the Reset.conf PDU sent by the Charge Point to the Central System in response to a Reset.req PDU. See also <<reset>>
+| 6.41 | SendLocalList.req           | This contains the field definition of the SendLocalList.req PDU sent by the Central System to the Charge Point.
+| 6.42 | SendLocalList.conf          | This contains the field definition of the SendLocalList.conf PDU sent by the Charge Point to the Central System in response to a SendLocalList.req PDU. See also <<send-local-list>>
+| 6.43 | SetChargingProfile.req      | This contains the field definition of the SetChargingProfile.req PDU sent by the Central System to the Charge Point.
+| 6.44 | SetChargingProfile.conf     | This contains the field definition of the SetChargingProfile.conf PDU sent by the Charge Point to the Central System in response to a SetChargingProfile.req PDU. See also <<set-charging-profile>>
+| 6.45 | StartTransaction.req        | This section contains the field definition of the StartTransaction.req PDU sent by the Charge Point to the Central System. See also <<start-transaction>>
+| 6.46 | StartTransaction.conf       | This contains the field definition of the StartTransaction.conf PDU sent by the Central System to the Charge Point in response to a StartTransaction.req PDU. See also <<start-transaction>>
+| 6.47 | StatusNotification.req      | This contains the field definition of the StatusNotification.req PDU sent by the Charge Point to the Central System. See also <<status-notification>>
+| 6.49 | StopTransaction.req         | This contains the field definition of the StopTransaction.req PDU sent by the Charge Point to the Central System. See also <<stop-transaction>>
+| 6.50 | TriggerMessage.req          | This contains the field definition of the StopTransaction.conf PDU sent by the Central System to the Charge Point in response to a StopTransaction.req PDU. See also <<stop-transaction>>
+| 6.51 | StopTransaction.conf        | This contains the field definition of the TriggerMessage.req PDU sent by the Central System to the Charge Point. See also <<trigger-message>>
+| 6.52 | TriggerMessage.conf         | This contains the field definition of the TriggerMessage.conf PDU sent by the Charge Point to the Central System in response to a TriggerMessage.req PDU. See also <<trigger-message>>
+| 6.53 | UnlockConnector.req         | This contains the field definition of the UnlockConnector.req PDU sent by the Central System to the Charge Point. See also <<unlock-connector>>
+| 6.54 | UnlockConnector.conf        | This contains the field definition of the UnlockConnector.conf PDU sent by the Charge Point to the Central System in response to an UnlockConnector.req PDU. See also <<unlock-connector>>
+| 6.55 | UpdateFirmware.req          | This contains the field definition of the UpdateFirmware.req PDU sent by the Central System to the Charge Point. See also <<update-firmware>>
+|=======================================================================

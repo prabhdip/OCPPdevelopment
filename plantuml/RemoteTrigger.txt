@@ -1,0 +1,34 @@
+@startuml
+skinparam dpi 400
+hide footbox
+title Remote Trigger
+
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+CS  -> CP: TriggerMessage.req(RequestedMessage) = <message>
+activate CS
+CP  --> CS:   TriggerMessage.req.conf(Accepted)
+deactivate CS
+activate CP
+
+
+
+note right of CS
+￼The message that is sent by the
+Charge Point, is determined by the
+TriggerMessage.req.
+end note
+
+
+
+CS  -> CP: <message>.req()
+activate CS
+CP  --> CS:  <message>.conf()
+deactivate CS
+activate CP
+
+
+
+@enduml

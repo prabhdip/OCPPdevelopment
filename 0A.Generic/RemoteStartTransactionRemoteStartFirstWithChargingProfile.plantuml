@@ -1,0 +1,64 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Remote start transaction – Remote Start First with Charging Profile\n\n Precondition:\n- charging cable not plugged in.
+
+actor "External Trigger" as ET
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+Note left : An external trigger can be\nfor example a Charge Point\nOperator or a user app.
+
+
+ET -> CS:  remote start()
+activate ET
+activate CS
+CS  -> CP:  RemotestartTransaction.req()
+CP --> CS: RemotestartTransaction.conf()
+
+note right : Purpose should always be TxProfile\nNo Authorize.req needed.
+
+
+CS --> ET : optional notification
+
+CP -> CS: StatusNotification.req(Preparing)
+activate CS
+CS --> CP: StatusNotfication.conf()
+deactivate CS
+
+alt within ConnectionTimeOut
+
+ET -> CP : Plugin cable()
+activate ET
+
+
+opt if cable not permanently attached
+CP ->o CP : lock connector()
+end
+
+
+CP ->o CP : start EnergyOffer()
+
+
+CP -> CS: StatusNotification.req(Charging)
+activate CS
+CS --> CP: StatusNotfication.conf()
+deactivate CS
+
+CP -> CS: StartTransaction.req()
+activate CS
+CS --> CP: StartTransaction.conf()
+deactivate CS
+
+
+CP ->o] : Continue smart regular\ncharging session
+|||
+deactivate ET
+
+
+end
+
+
+@enduml

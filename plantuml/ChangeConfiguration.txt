@@ -1,0 +1,31 @@
+@startuml
+'skinparam dpi 400
+hide footbox
+
+title Change Configuration
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+    alt  key not supported / unknown
+    CS -> CP: ChangeConfiguration.req(reservationId)
+    activate CS
+    activate CP
+    CP o--> CS: ChangeConfiguration.conf(NotSupported)
+    deactivate CS
+    deactivate CP
+    |||
+    end
+
+    alt  key supported, but update failed
+    CS o-->o CP: ChangeConfiguration.conf(Rejected)
+    |||
+    end
+
+    alt  key ReadOnly = true
+    CS o-->o CP: ChangeConfiguration.conf(Rejected)
+    |||
+    end
+
+@enduml

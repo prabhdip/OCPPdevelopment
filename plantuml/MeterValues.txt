@@ -1,0 +1,17 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Meter Values
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+ 
+CP -> CS: MeterValues.req(connectorId, meterValue, [transactionId])
+activate CP
+activate CS
+CS --> CP: MeterValues.conf()
+
+deactivate CS
+deactivate CP
+@enduml

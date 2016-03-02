@@ -1,0 +1,60 @@
+:numbered:
+:toc: macro
+
+= All Data Types
+
+
+[cols="^1,1,3",options="header",]
+|=======================================================================
+
+| CH  |  Data Type                  | Description
+| 7.1  | AuthorizationData          | Elements that constitute an entry of a Local Authorization List update.
+| 7.2  | AuthorizationStatus        | Status in a response to an Authorize.req.
+| 7.3  | AvailabilityStatus         | Status returned in response to ChangeAvailability.req.
+| 7.4  | AvailabilityType           | Requested availability change in ChangeAvailability.req.
+| 7.5  | CancelReservationStatus    | Status in CancelReservation.conf.
+| 7.6  | ChargePointErrorCode       | Charge Point status reported in StatusNotification.req.
+| 7.7  | ChargePointStatus          | Status reported in StatusNotification.req. A status can be reported for the Charge Point main controller (connectorId = 0) or for a specific connector. Status for the Charge Point main controller is a subset of the enumeration: _Available_, _Unavailable_ or _Faulted_.
+| 7.8  | ChargingProfile            | A ChargingProfile consists of a ChargingSchedule, describing the amount of power or current that can be delivered per time interval.
+| 7.9  | ChargingProfileKindType    | n/a
+| 7.10 | ChargingProfilePurposeType |
+| 7.11 | ChargingProfileStatus      | Status returned in response to SetChargingProfile.req.
+| 7.12 | ChargingRateUnitType       | Unit in which a charging schedule is defined, as used in: GetCompositeSchedule.req and ChargingSchedule
+| 7.13 | ChargingSchedule           | n/a
+| 7.14 | ChargingSchedulePeriod     | n/a
+| 7.15 | CiString20Type             | Generic used case insensitive string of 20 characters.
+| 7.16 | CiString25Type             | Generic used case insensitive string of 25 characters.
+| 7.17 | CiString50Type             | Generic used case insensitive string of 500 characters.
+| 7.18 | CiString255Type            | Generic used case insensitive string of 20 characters.
+| 7.19 | CiString500Type            | Generic used case insensitive string of 500 characters.
+| 7.20 | ClearCacheStatus           | Status returned in response to ClearCache.req.
+| 7.21 | ClearChargingProfileStatus | Status returned in response to ClearChargingProfile.req.
+| 7.22 | ConfigurationStatus        | Status in ChangeConfiguration.conf.
+| 7.23 | DataTransferStatus         | Status in DataTransfer.conf.
+| 7.24 | DiagnosticsStatus          | Status in DiagnosticsStatusNotification.req.
+| 7.25 | FirmwareStatus             | Status of a firmware download as reported in FirmwareStatusNotification.req.
+| 7.26 | GetCompositeScheduleStatus | Status returned in response to GetCompositeSchedule.req.
+| 7.27 | IdTagInfo                  | Contains status information about an identifier. It is returned in Authorize, Start Transaction and Stop Transaction responses.
+| 7.28 | IdToken                    | Contains the identifier to use for authorization. It is a case insensitive string. In future releases this may become a complex type to support multiple forms of identifiers.
+| 7.29 | KeyValue                   | Contains information about a specific configuration key. It is returned in GetConfiguration.conf.
+| 7.30 |Location                    |   Allowable values of the optional "location" field of a value element in SampledValue.
+| 7.31 | Measurand                  |  Allowable values of the optional "measurand" field of a Value element, as used in MeterValues.req and StopTransaction.req messages. Default value of "measurand" is always "Energy.Active.Import.Register"
+| 7.32 | MessageTrigger             |  Type of request to be triggered in a TriggerMessage.req.
+| 7.33  | MeterValue                |  Collection of one or more sampled values in MeterValues.req. All sampled values in a MeterValue are sampled at the same point in time.
+| 7.34 | Phase                      | Phase as used in SampledValue. Phase specifies how a measured value is to be interpreted. Please note that not all values of Phase are applicable to all Measurands.
+| 7.35 | ReadingContext             | Values of the context field of a value in SampledValue.
+| 7.36 | Reason                     | Reason for stopping a transaction in StopTransaction.req.
+| 7.37 | RecurrencyKindType         | n/a
+| 7.38 | RegistrationStatus         | Result of registration in response to BootNotification.req.
+| 7.39 | RemoteStartStopStatus      | The result of a RemoteStartTransaction.req or RemoteStopTransaction.req request.
+| 7.40 | ReservationStatus          | Status in ReserveNow.conf.
+| 7.41 | ResetStatus                | Result of Reset.req.
+| 7.42 | ResetType                  | Type of reset requested by Reset.req.
+| 7.43 | SampledValue               | Single sampled value in MeterValues. Each value can be accompanied by optional fields.
+| 7.44 | TriggerMessageStatus       | Status in TriggerMessage.conf.
+| 7.45 | UnitOfMeasure              |  Allowable values of the optional "unit" field of a Value element, as used in MeterValues.req and StopTransaction.req messages. Default value of "unit" is always "Wh".
+| 7.46 | UnlockStatus               | Status in response to UnlockConnector.req.
+| 7.47 | UpdateStatus               | Type of update for a SendLocalList.req.
+| 7.48 | UpdateType                 | Type of update for a SendLocalList.req.
+| 7.49 | ValueFormat                | Format that specifies how the value element in SampledValue is to be interpreted.
+|=======================================================================

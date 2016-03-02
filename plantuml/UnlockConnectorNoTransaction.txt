@@ -1,0 +1,27 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Unlock Connector (no transaction)\n\nPrecondition\n -No transaction running\n - Cable not permanently attached
+
+actor "External Trigger" as ET
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+ET -> CS: unlock connector
+activate ET
+activate CS
+CS -> CP: UnlockConnector.req()
+
+CP-> CP: unlock connector()
+activate CP
+deactivate CS
+deactivate CP
+
+CP --> CS: UnlockConnector.conf(unlocked)
+CS --> ET: optional notofication()
+deactivate ET
+
+... Posconditions:\n-Charge Point is in Idle state\n - Conmnector is unlocked. ...
+
+@enduml

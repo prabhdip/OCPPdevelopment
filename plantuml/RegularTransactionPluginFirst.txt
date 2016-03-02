@@ -1,0 +1,130 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Regular Transaction - Plugin First
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+activate EV #FFFFFF
+EV -> CP : Plugin cable()
+
+CP -> CS : StatusNotification.req(Preparing)
+activate CS
+CS --> CP : StatusNotification.conf()
+deactivate CS
+
+EV -> CP : Present identification()
+activate CP #FFFFFF
+CP -> CS :Authorize.req
+activate CS
+CS --> CP :Authorize.conf
+deactivate CS
+
+CP --> EV : optional notification()
+deactivate EV #FFFFFF
+
+opt if cable not permanetenly attached
+CP ->o CP: lock connector()
+end
+
+CP ->o CP: Lock connector()
+
+opt
+CP -> CS: StatusNotification.req(SuspendedEV)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+end
+
+opt
+CP -> CS: StatusNotification.req(SuspendedEVSE)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+end
+
+CP -> CS: StatusNotification.req(Charging)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+
+CP -> CS: StartTransaction.req()
+activate CS
+CS -->CP: StartTransaction.conf()
+deactivate CS
+
+opt if charge point supports metervalues
+loop while transaction running
+CP -> CS: MeterValues.req
+activate CS
+CS --> CP: MeterValues.conf
+note right : Frequency based on \n
+MeterValueSampleInterval
+deactivate CS
+end
+end
+
+opt
+CP -> CS: StatusNotification.req(SuspendedByEV)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+end
+deactivate CP
+
+EV -> CP : Present identification()
+
+opt if unknown id
+CP -> CS: Authorize.req()
+activate CS
+CS --> CP: Authorize.conf()
+note right : It is also possible to use a different\n
+idTag to stop a transaction, as long as the GroupingidTtag\n
+is the same.
+deactivate CS
+end
+
+CP ->o CP: stop EnergyOffer()
+
+opt if cable not permanently attached
+CP ->o CP: Unlock connector()
+end
+
+CP -> CS: StatusNotification.req(Finishing)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+
+CP -> CS: StopTransaction.req()
+activate CS
+CS -->CP: StopTransaction.conf()
+note right stopReason = Local is\n
+optional since it is the default.
+
+deactivate CS
+
+CP --> EV : optional notification
+
+CP -> CS: StatusNotification.req(Available)
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CS
+EV -> CP : Unplug cable()
+
+'Postcondition: Charge Point is in Idle state.'
+
+
+' Remarks
+' The sequence is valid for the scenario where the cable is plugged in to the charge point and the EV is connected to the cable and also, in case of a fixed cable on the charge point, when the cable is plugged in to the EV.
+' It is advisable to always send a StartTransaction.req when the correct connection between charge point and EV is established, regardless whether the energy flow has started. This is important because, for example:
+' The car might not start immediately because of a warm battery
+' The EV has its own schedule
+' Battery might be full
+' Calculation of parking costs
+' Notification to user with a mobile app (no transaction means no record of the user
+charging)'
+
+@enduml

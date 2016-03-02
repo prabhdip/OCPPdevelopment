@@ -1,0 +1,55 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Reserve Now
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+EV -> CS:  reserve
+activate CS
+CS -> CP: ReserveNow.req(reservationId)
+activate CP
+CP --> CS:ReserveNow.conf(Accpeted)
+
+deactivate CS
+deactivate CP
+
+
+
+CP -> CS: StatusNotification.req(status = Reserved)
+activate CP
+activate CS
+CS --> CP: StatusNotification.conf()
+deactivate CP
+deactivate CS
+
+  alt if not used within expiry date
+  CP -> CS: StatusNotification.req(status = Available)
+  activate CP
+  activate CS
+  CS --> CP: StatusNotification.conf()
+  deactivate CP
+  deactivate CS
+  |||
+  end
+
+
+    alt if not used within expiry date and correct user
+    EV -> CP: Present identification()
+    activate CP
+    CP ->o]
+    deactivate CP
+    |||
+    end
+
+note over CP
+When sending the StartTransaction.req,\nthe reservationId
+that was sent in the ReserveNow message, should also be
+filled in the reservationI field in the\nStartTransaction.req
+message.
+end note
+
+@enduml

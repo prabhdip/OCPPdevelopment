@@ -1,0 +1,71 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Firmware Status Notification – Installation Failed
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CP -> CS: UpdateFirmware.req()
+activate CP
+activate CS
+CS --> CP: UpdateFirmware.conf()
+deactivate CP
+deactivate CS
+
+CP -> CS: FirmwareStatusNotification.req(Downloading)
+activate CP
+activate CS
+CS --> CP: FirmwareStatusNotification.conf
+deactivate CP
+deactivate CS
+
+        note right
+        During firmware update process,
+        the Charge Point must be unavailable.
+        However, it is up to the
+        manufacturer to determine at which
+        exact point in the upgrade the status
+        is changed to Unavailable,via the
+        StatusNotification.req message (e.g. during
+        downloading and / or installing).
+        end note
+
+note over CP
+Downloading firmware...
+end note
+
+CP -> CS:  FirmwareStatusNotification.req(Downloaded)
+activate CP
+activate CS
+CS --> CP:  FirmwareStatusNotification.conf()
+deactivate CP
+deactivate CS
+
+CP -> CS: FirmwareStatusNotification.req(Status = Installing)
+activate CP
+activate CS
+CS --> CP: FirmwareStatusNotification.conf
+deactivate CP
+deactivate CS
+
+note over CP
+Installing...
+end note
+
+opt
+note over CP
+Reboot
+end
+
+  alt
+  CP -> CS: FirmwareStatusNotification.req(InstallationFailed)
+  activate CP
+  activate CS
+  CS --> CP: FirmwareStatusNotification.conf
+  deactivate CP
+  end
+
+
+@enduml

@@ -1,0 +1,455 @@
+<<<
+[[UseCases]]
+== <Use cases>
+
+===  UC.XX - Set Charging Profile +
+
+Functional Block: F. Smart Charging +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*   | Set Charging Profile
+|*2*    | *ID*                      | UC.XX
+|*3*    | *Objective(s)*            | To set a charging profile at a Charge Point.
+|*4*    | *Description*             | This use case describes the possibility to set a charging profile within Smart Charging;
+                                      a charging profile consists of a charging schedule, which is basically a list of time intervals with
+                                      their maximum charge power or current, and some values to specify the time period and recurrence of
+                                      the schedule.
+|       | _Actors_                  | Charge Point, Central System
+|       | _Scenario description_    | The Central System can send a <<setchargingprofile.req,SetChargingProfile.req>> to a Charge Point, to set a charging profile.
+|       | *_Alternative scenarios_* | _The following situations apply:_
+| _a_   | _Start of Transaction_    |
+                                      If the Central System receives a
+                                      <<starttransaction.req,StartTransaction.req>> the Central System
+                                      SHALL respond with a <<starttransaction.conf,StartTransaction.conf>>.
+                                      If there is a need for a charging profile, The Central System MAY
+                                      choose to send a <<setchargingprofile.req,SetChargingProfile.req>>
+                                      to the Charge Point. +
+                                      It is RECOMMENDED to check the timestamp in the <<starttransaction.req,StartTransaction.req>> PDU prior to sending a
+                                      charging profile to check if the transaction is likely to be still ongoing. The <<starttransaction.req,StartTransaction.req>>
+                                      might have been cached during an _offline_ period.
+| _b_  | _remotestarttransaction.req_|
+
+                                      The Central System MAY include a charging profile in a <<remotestarttransaction.req,RemoteStartTransaction>> request.
+                                      If the Central System includes a <<chargingprofile,ChargingProfile>>, the ChargingProfilePurpose MUST be set to TxProfile. +
+                                      **[NOTE]** +
+                                      The Charge Point SHOULD add the TransactionId to the received profile once the transaction is reported to the central system.
+
+| _c_  | _During a Transaction_  |
+
+                                       The Central System MAY send a charging profile to a Charge Point to
+                                       update the charging profile for that transaction. The Central System
+                                       SHALL use the <<setchargingprofile.req,SetChargingProfile.req>> PDU
+                                       for that purpose. If a charging profile
+                                       with the same <<chargingprofileid,chargingProfileId>>, or the same combination
+                                       of <<stacklevel,stackLevel>> / <<charging-profile-purpose,ChargingProfilePurpose>>, exists
+                                       on the Charge Point, the new charging profile SHALL replace the existing
+                                       charging profile, otherwise it SHALL be added. +
+                                       The Charge Point SHALL then re-evaluate its collection
+                                       of charge profiles to determine which charging profile will become active.
+                                       In order to ensure that the updated charging profile applies only to the current
+                                       transaction, the <<charging-profile-purposes,chargingProfilePurpose>> of the
+                                       <<chargingprofile,ChargingProfile>> MUST be set to <<txprofile,TxProfile>>. +
+                                       (See section: <<charging-profile-purposes,Charging Profile Purposes>>)
+
+| _d_ | _Outside a Transaction_ |
+
+                                        The Central System MAY send charging profiles to a Charge Point that are
+                                        to be used as default charging profiles. The Central System SHALL use
+                                        the <<setchargingprofile.req,SetChargingProfile.req>> PDU for that purpose.
+                                        Such charging profiles MAY be sent at any time. If a charging profile
+                                        with the same <<chargingprofileid,chargingProfileId>>, or the same combination of
+                                        <<stacklevel,stackLevel>> / <<charging-profile-purpose,ChargingProfilePurpose>>, exists
+                                        on the Charge Point, the new charging profile SHALL replace the existing
+                                        charging profile, otherwise it SHALL be added. The Charge Point SHALL
+                                        then re-evaluate its collection of charge profiles to determine which
+                                        charging profile will become active. +
+
+                                         **[NOTE]** +
+                                         It is not possible to set a <<chargingprofile, ChargingProfile>> with purpose set to
+                                         <<txprofile,TxProfile>> without presence of an active transaction, or in advance of a transaction. +
+
+                                         **[NOTE]** +
+                                         When a <<chargingprofile, ChargingProfile>> is refreshed during execution, it is advised
+                                         to put the startSchedule of the new <<chargingprofile, ChargingProfile>> in the past, so there is no period of
+                                         default charging behaviour inbetween the ChargingProfiles. The Charge Point SHALL continue to execute the existing
+                                         <<chargingprofile, ChargingProfile>>
+                                         until the new <<chargingprofile, ChargingProfile>> is installed. +
+
+                                         **[NOTE]** +
+                                         If the <<chargingscheduleperiod,chargingSchedulePeriod>> is longer than _duration_, the remainder periods SHALL
+                                         not be executed. If duration is longer than the <<chargingscheduleperiod,chargingSchedulePeriod>>, the Charge Point
+                                         SHALL keep the value of the last <<chargingscheduleperiod,chargingSchedulePeriod>> until _duration_ has ended. +
+
+                                         **[NOTE]** +
+                                         When <<recurrencykindtype, recurrencyKind>> is used in combination with a <<chargingschedule, chargingSchedule>>
+                                         _duration_ shorter than the <<recurrencykindtype, recurrencyKind>> period, the Charge Point SHALL fall back to default
+                                         behaviour after the <<chargingschedule, chargingSchedule>> _duration_ ends.
+
+| _e_ | _Clear Charging Profile_ | If the Central System wishes to clear some or all of the charging
+                                    profiles that were previously sent the Charge Point, it SHALL use the
+                                    <<clearchargingprofile.req,ClearChargingProfile.req>> PDU.
+
+                                    The Charge Point SHALL respond with a
+                                    <<clearchargingprofile.conf,ClearChargingProfile.conf>> PDU
+                                    specifying whether it was able to process the request.
+
+
+
+|*5*    | *Prerequisites*          | Smart Charging is enabled.
+|*6*    | *Postconditions*         | *Successful postcondition:* +
+                                    Charging profile has successfully ben set  +
+                                     *Failure postcondition:* +
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+
+image:media/SetChargingProfile.png["Set Charging Profile",scaledwidth="95%"]
+
+image:media/ClearChargingProfile.png["Clear Charging Profile",scaledwidth="95%"]
+
+[cols="^0,2,6",options="noheader",]
+|=======================================================================
+|*8*    | *Error handling*         |
+
+                                    *1.* Set Charging Profile (rejected) +
+                                    *2.* Clear Charging Profile (uphappy flow)
+|*9*    | *Remarks*                |
+                                      IMPORTANT: To prevent mismatch between transactions and a <<txprofile,TxProfile>>, The Central System SHALL include the transactionId in a <<setchargingprofile.req,SetChargingProfile.req>> if the profile applies to a specific transaction.
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+
+=== Charging Profile Types
+
+There are three different types of charging profiles, depending on their
+purpose:
+
+[[chargepointmaxprofile]]
+* _ChargePointMaxProfile_
+
+In load balancing scenarios, the Charge Point has one or more
+local charging profiles that limit the power or current to be shared by all connectors
+of the Charge Point. The Central System SHALL configure such a profile
+with ChargingProfilePurpose set to “_ChargePointMaxProfile_”. _ChargePointMaxProfile_
+can only be set at Charge Point ConnectorId 0.
+
+[[txdefaultprofile]]
+* _TxDefaultProfile_
+
+Default schedules for new transactions MAY be used to impose charging policies.
+An example could be a policy that prevents charging during the day.
+For schedules of this purpose, ChargingProfilePurpose SHALL be set
+to _TxDefaultProfile_.
+
+_If TxDefaultProfile is set to ConnectorId 0, the TxDefaultProfile is applicable to all Connectors._
+
+_If ConnectorId is set >0, it only applies to that specific connector._
+
+_In the event a TxDefaultProfile for connector 0 is installed, and the Central System sends a new profile with ConnectorId >0, the TxDefaultProfile SHALL be replaced only for that specific connector._
+
+[[txprofile]]
+* _TxProfile_
+
+If a transaction-specific profile with purpose _TxProfile_ is present,
+it SHALL overrule the default charging profile with purpose
+<<txdefaultprofile,TxDefaultProfile>> for the duration of the current transaction only.
+After the transaction is stopped, the profile SHOULD be deleted.
+If there is no transaction active on the connector specified in a charging
+profile of type _TxProfile_, then the Charge Point SHALL discard it
+and return an error status in <<setchargingprofile.conf,SetChargingProfile.conf>>.
+
+The final schedule constraints that apply to a transaction are
+determined by merging the profiles with purposes _ChargePointMaxProfile_
+with the profile _TxProfile_ or the <<txdefaultprofile,TxDefaultProfile>> in case no profile
+of purpose _TxProfile_ is provided.
+_TxProfile SHALL only be set at Charge Point ConnectorId >0._
+
+
+
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                                                               | *ID* | *Requirement definition*                                                                                                                                                          | *M/O/C* | *Rationale* | *Note*
+| 5.16   | FR      |                                                                                                                                                                        |    | The Central System shall send a SetChargingProfile.req to a Charge Point.                                                                            | M     |                                                                                               |
+| 5.16   | FR      | At the start of a transaction to set the charging profile for the transaction.                                                                                         |    | The Central System shall send a SetChargingProfile.req to a Charge Point.                                                                            | M     |                                                                                               |
+| 5.16   | FR      | In a RemoteStartTransaction request sent to a Charge Point.                                                                                                             |    | The Central System shall send a SetChargingProfile.req to a Charge Point.                                                                            | M     |                                                                                               |
+| 5.16   | FR      | During a transaction to change the active profile for the transaction.                                                                                                  |    | The Central System shall send a SetChargingProfile.req to a Charge Point.                                                                            | M     |                                                                                               |
+| 5.16   | FR      | Outside the context of a transaction as a separate message to set a charging profile to a local controller, Charge Point, or a default charging profile to a connector |    | The Central System shall send a SetChargingProfile.req to a Charge Point.                                                                            | M     |                                                                                               |
+| 5.16   | FR      | If the profile applies to a specific transaction.                                                                                                                      |    | The Central System shall include the transactionId in a SetChargingProfile.req                                                                       | M     |                                                                                               |
+| 5.16.1 | FR      | If the Central System receives a <<StartTransaction.req, StartTransaction.req>>                                                                                                                 |    | The Central System shall respond with a StartTransaction.conf                                                                                        | M     |                                                                                               |
+| 5.16.1 | FR      | If there is a need for a charging profile.                                                                                                                             |    | The Central System MAY choose to send a SetChargingProfile.req to the Charge Point.                                                                  | O     |                                                                                               |
+| 5.16.2 | FR      |                                                                                                                                                                        |    | The Central System MAY include a charging profile in a RemoteStartTransaction request.                                                               | O     |                                                                                               |
+| 5.16.2 | FR      | If the Central System includes a ChargingProfile.                                                                                                                      |    | The Central System shall set the ChargingProfilePurpose to TxProfile.                                                                                | M     |                                                                                               |
+| 5.16.2 | FR      |                                                                                                                                                                        |    | The Charge Point SHOULD add the TransactionId to the received profile once the transaction is reported to the central system.                        | C     |                                                                                               |
+| 5.16.3 | FR      |                                                                                                                                                                        |    | The Central System MAY send a charging profile to a Charge Point to update the charging profile for that transaction.                                | O     | To update the charging profile for that transaction.                                          |
+| 5.16.3 | FR      | _see previous requirement_                                                                                                                                                  |    | The Central System MAY send a charging profile to a Charge Point to update the charging profile for that transaction.                                | O     |                                                                                               |
+| 5.16.3 | FR      | If a charging profile with the same chargingProfileId, or the same combination of stackLevel / ChargingProfilePurpose, exists on the Charge Point                      |    | The new charging profile shall replace the existing charging profile, otherwise it shall be added.                                                   | M     |                                                                                               |
+| 5.16.3 | FR      | _see previous requirement_                                                                                                                                                  |    | The Charge Point shall then re-evaluate its collection of charge profiles to determine which charging profile will become active                     | M     |                                                                                               |
+| 5.16.3 | FR      |                                                                                                                                                                        |    | The Central System shall set the chargingProfilePurpose of the ChargingProfile to TxProfile.                                                         | M     | In order to ensure that the updated charging profile applies only to the current transaction. | (See section: Charging Profile Purposes)
+| 5.16.4 | FR      |                                                                                                                                                                        |    | The Central System MAY send charging profiles to a Charge Point that are to be used as default charging profiles                                     | O     |                                                                                               |
+| 5.16.4 | FR      |                                                                                                                                                                        |    | The Central System shall use the SetChargingProfile.req PDU for that purpose.                                                                        | M     |                                                                                               |
+| 5.16.4 | FR      | If a charging profile with the same chargingProfileId, or the same combination of stackLevel / ChargingProfilePurpose, exists on the Charge Point.                     |    | The new charging profile shall replace the existing charging profile, otherwise it shall be added.                                                   | M     |                                                                                               |
+| 5.16.4 | FR      | _see previous requirement_                                                                                                                                                  |    | The Charge Point shall then re-evaluate its collection of charge profiles to determine which charging profile will become active.                    | M     |                                                                                               |
+| 5.16.4 |         |                                                                                                                                                                        |    | It is not possible to set a ChargingProfile with purpose set to TxProfile without presence of an active transaction, or in advance of a transaction. | N     |                                                                                               |
+| 5.16.4 | FR      | When a ChargingProfile is refreshed during execution.                                                                                                                  |    | The Central System shall put the startSchedule of the new ChargingProfile in the past.                                                               | O     | So there is no period of default charging behaviour inbetween the ChargingProfiles            |
+| 5.16.4 | FR      |                                                                                                                                                                        |    | The Charge Point shall continue to execute the existing ChargingProfile until the new ChargingProfile is installed.                                  | M     |                                                                                               |
+| 5.16.4 |         | If the chargingSchedulePeriod is longer than duration.                                                                                                                 |    | The remainder chargingSchedulePeriod shall not be executed.                                                                                          | N     |                                                                                               |
+| 5.16.4 | FR      | If duration is longer than the chargingSchedulePeriod.                                                                                                                  |    | The Charge Point shall keep the value of the last chargingSchedulePeriod until duration has ended.                                                   | M     |                                                                                               |
+| 5.16.4 | FR      | When recurrencyKind is used in combination with a chargingSchedule duration shorter than the recurrencyKind period.                                                    |    | The Charge Point shall fall back to default behaviour after the chargingSchedule duration ends.                                                      | M     |                                                                                               |
+| 5.17   | FR      | In the request the Central System indicates which message it wishes to receive. For every such requested message.                                                      |    | The Central System MAY optionally indicate to which connector this request applies.                                                                  | O     |                                                                                               |
+|=======================================================================
+
+
+<<<
+[[Messages]]
+== Messages
+
+[[setchargingprofile.req]]
+=== SetChargingProfile.req
+This contains the field definition of the PDU sent by
+the Central System to the Charge Point.
+
+The Central System uses this message to send charging profiles to a
+Charge Point.
+See also <<set-charging-profile>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*connectorId* |integer |1..1 |Required. The connector to which the
+charging profile applies. If connectorId = 0, the message contains an
+overall limit for the Charge Point.
+|*csChargingProfiles* |<<chargingprofile,ChargingProfile>> |1..1 |
+Required. The charging profile to be set at the Charge Point.
+|=======================================================================
+
+[[setchargingprofile.conf]]
+=== SetChargingProfile.conf
+This contains the field definition of the SetChargingProfile.conf PDU sent by
+the Charge Point to the Central System in response to a <<setchargingprofile.req,SetChargingProfile.req>>
+PDU.
+See also <<set-charging-profile>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<chargingprofilestatus,ChargingProfileStatus>> |1..1 |
+Required. Returns whether the Charge Point has been able to process the message successfully. This does not guarantee the schedule will be followed to the letter. There might be other constraints the Charge Point may need to take into account.
+|=======================================================================
+
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+[[chargingprofile]]
+=== ChargingProfile
+_Class_
+
+A ChargingProfile consists of a <<chargingschedule,ChargingSchedule>>, describing the amount
+of power or current that can be delivered per time interval.
+
+.Class Diagram: ChargingProfile
+image::media/class_chargingprofile.png["ChargingProfile",scaledwidth="95%"]
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|[[chargingprofileid]]*chargingProfileId* |integer |1..1 |Required. Unique identifier for
+this profile.
+|*transactionId*| integer|0..1 | Optional. Only valid if ChargingProfilePurpose is set to <<txprofile,TxProfile>>,
+the transactionId MAY be used to match the profile to a specific transaction.
+|[[stacklevel]]*stackLevel* |integer >=0 |1..1 |Required. Value determining level in
+hierarchy stack of profiles. Higher values have precedence over lower
+values. Lowest level is 0.
+|*chargingProfilePurpose* |<<chargingprofilepurposetype,ChargingProfilePurposeType>>
+ |1..1 |Required. Defines the purpose of the schedule transferred by this message.
+ |*chargingProfileKind* |<<chargingprofilekindtype,ChargingProfileKindType>>
+ |1..1 |Required. Indicates the kind of schedule.
+|*recurrencyKind* |<<recurrencykindtype,RecurrencyKindType>> |0..1 |
+Optional. Indicates the start point of a recurrence.
+|*validFrom* |DateTime |0..1 |Optional. Point in time at which the
+profile starts to be valid. If absent, the profile is valid as soon as
+it is received by the Charge Point. Not to be used when
+<<charging-profile-purposes,ChargingProfilePurpose>> is <<txprofile,TxProfile>>.
+|*validTo* |DateTime |0..1 |Optional. Point in time at which the profile
+stops to be valid. If absent, the profile is valid until it is replaced
+by another profile. Not to be used when <<charging-profile-purposes,ChargingProfilePurpose>> is
+<<txprofile,TxProfile>>.
+|*chargingSchedule* |<<chargingschedule,ChargingSchedule>> |1..1 |
+Required. Contains limits for the available power or current over time.
+|=======================================================================
+
+[[chargingprofilekindtype]]
+=== ChargingProfileKindType
+_Enumeration_
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*Absolute* |Schedule periods are relative to a fixed point in time
+defined in the schedule.
+|*Recurring* |The schedule restarts periodically at the first schedule
+period.
+|*Relative* |Schedule periods are relative to a situation-specific start
+point (such as the start of a session) that is determined by the charge
+point.
+|=======================================================================
+
+[[chargingprofilepurposetype]]
+=== ChargingProfilePurposeType
+_Enumeration_
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*<<chargepointmaxprofile,ChargePointMaxProfile>>* |Configuration for
+the maximum power or current available for an entire Charge Point.
+ <<setchargingprofile.req,SetChargingProfile.req>> message.
+|*<<txdefaultprofile,TxDefaultProfile>>* |Default profile to be used
+ for new transactions.
+|*<<txprofile,TxProfile>>* |Profile with constraints to be imposed by
+ the Charge Point on the current transaction. A profile with this purpose
+ SHALL cease to be valid when the transaction terminates.
+|=======================================================================
+
+[[chargingprofilestatus]]
+=== ChargingProfileStatus
+_Enumeration_
+
+Status returned in response to
+<<setchargingprofile.req,SetChargingProfile.req>>.
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*Accepted* |Request has been accepted and will be executed.
+|*Rejected* |Request has not been accepted and will not be executed.
+|*NotSupported* |Charge Point indicates that the request is not supported.
+|=======================================================================
+
+
+[[chargingrateunittype]]
+=== ChargingRateUnitType
+_Enumeration_
+
+Unit in which a charging schedule is defined, as used in:
+<<getcompositeschedule.req,GetCompositeSchedule.req>> and
+<<chargingschedule,ChargingSchedule>>
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*W* |Watts (power).
+|*A* |Amperes (current).
+|=======================================================================
+
+[[chargingschedule]]
+=== ChargingSchedule
+_Class_
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*duration* |integer |0..1 |Optional. Duration of the charging schedule
+in seconds. If the duration is left empty, the last period will continue
+indefinitely or until end of the transaction in case startSchedule is
+absent.
+|*startSchedule* |DateTime |0..1 |Optional. Starting point of an
+absolute schedule. If absent the schedule will be relative to start of
+charging.
+|*chargingRateUnit*| <<chargingrateunittype, ChargingRateUnitType>> |1..1 | Required. The unit of measure Limit is expressed in.
+|*chargingSchedulePeriod* |<<chargingscheduleperiod, ChargingSchedulePeriod>> |1..* |Required. List
+of <<chargingscheduleperiod, ChargingSchedulePeriod>> elements defining maximum power or current usage over
+time.
+|[[minchargingrate]]*minChargingRate* |decimal |0..1 |Optional. Minimum charging rate supported by the electric vehicle. The unit of measure is defined by the chargingRateUnit. This parameter is intended to be used by a local smart charging algorithm to optimize the power allocation for in the case a charging process is inefficient at lower charging rates. Accepts at most one digit fraction (e.g. 8.1)
+|=======================================================================
+
+[[chargingscheduleperiod]]
+=== ChargingSchedulePeriod
+_Class_
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*startPeriod* |integer |1..1 |Required. Start of the period, in
+seconds from the start of schedule. The value of StartPeriod
+also defines the stop time of the previous period.
+|*limit* |decimal |1..1 |Required. Power limit during the schedule period, expressed in Amperes. Accepts at most one digit fraction (e.g. 8.1).
+|*numberPhases* |integer |0..1 |Optional. The number of phases that can
+be used for charging. If a number of phases is needed, numberPhases=3
+will be assumed unless another number is given.
+|=======================================================================
+
+
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys
+
+[[configkey-charge-profile-max-stack-level]]
+==== `ChargeProfileMaxStackLevel`
+
+[cols="1,3"]
+|===
+|*Required/optional*|required
+|*Accessibility*|R
+|*Type*|int
+|*Description*|
+Max StackLevel of a ChargingProfile. The
+number defined also indicates the max allowed number of installed
+charging schedules per <<charging-profile-purposes,Charging Profile Purposes>>.
+|===
+
+[[configkey-charging-schedule-allowed-charging-rate-unit]]
+==== `ChargingScheduleAllowedChargingRateUnit`
+
+[cols="1,3"]
+|===
+|*Required/optional*|required
+|*Accessibility*|R
+|*Type*|CSL
+|*Description*|
+A list of supported quantities for use in a
+<<chargingschedule,ChargingSchedule>>. Allowed values: 'Current' and 'Power'
+|===
+
+[[configkey-charging-schedule-max-periods]]
+==== `ChargingScheduleMaxPeriods`
+
+[cols="1,3"]
+|===
+|*Required/optional*|required
+|*Accessibility*|R
+|*Type*|int
+|*Description*|
+Maximum number of periods that may be defined per
+<<chargingschedule,ChargingSchedule>>.
+|===
+
+[[configkey-connector-switch-3to1-phase-supported]]
+==== `ConnectorSwitch3to1PhaseSupported`
+
+[cols="1,3"]
+|===
+|*Required/optional*|optional
+|*Accessibility*|R
+|*Type*|bool
+|*Description*|
+If defined and true, this Charge Point support switching from 3 to 1 phase during a charging session.
+|===
+
+[[configkey-max-charging-profiles-installed]]
+==== `MaxChargingProfilesInstalled`
+
+[cols="1,3"]
+|===
+|*Required/optional*|required
+|*Accessibility*|R
+|*Type*|int
+|*Description*| Maximum number of Charging profiles installed at a time
+|===

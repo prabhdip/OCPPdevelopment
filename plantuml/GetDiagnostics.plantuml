@@ -1,0 +1,15 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CS -> CP: GetDiagnostics.req(location, [retries]. [retryInterval], [startTime], [stopTime])
+activate CP
+activate CS
+CP --> CS: GetDiagnostics.conf([fileName])
+
+deactivate CS
+deactivate CP
+@enduml

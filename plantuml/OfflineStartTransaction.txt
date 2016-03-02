@@ -1,0 +1,53 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Offline Start Transaction
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+activate EV
+EV -> CP: Present identification()
+activate CP
+
+    opt if supported
+    CP ->o CP: check local authorization list()
+    end
+
+    opt if supported
+    CP ->o CP: check local authorization list()
+    end
+
+alt LocalAuthorizeOffline=true & (Id in cache or (Id\nin local list & Valid)) or (AllowOfflineTxForUnknownId=true\n& Id not Invalid in local list)
+CP --> EV: optional notification()
+CP ->o CP: lock connector()
+CP ->o CP: start EnergyOffer()
+CP ->o CP: connection restored()
+
+
+CP -> CS: StartTransaction.req()
+activate CS
+CS --> CP: StartTransaction.conf()
+deactivate CS
+    alt if authorized
+    CP ->o]: Continue regular charging session\n(2.1.3, #2, skip StartTransaction)
+    |||
+    end
+
+    alt if not authorized
+    CP ->o]: Continue "start charging session\n- Id not accepted"
+    |||
+    end
+|||
+end
+
+deactivate CP
+deactivate EV
+
+
+
+
+@enduml

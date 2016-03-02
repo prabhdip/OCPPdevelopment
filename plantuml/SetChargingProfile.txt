@@ -1,0 +1,29 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Set Charging Profile
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+alt at start of transaction
+CP --> CS: StartTransaction.req(connectorId, idTag, meterStart, timestamp [reservationId])
+activate CS
+activate CP
+CS --> CP: StartTransaction.conf(idTagInfo, transactionId)
+CS --> CP: SetChargingProfile.req(ConnectorId, csChargingProfiles)
+CP --> CS: SetChargingProfile.conf(status)
+deactivate CS
+deactivate CP
+
+else otherwise
+CS --> CP: SetChargingProfile.req(ConnectorId, csChargingProfiles)
+activate CS
+activate CP
+CP --> CS: SetChargingProfile.conf(status)
+deactivate CS
+deactivate CP
+end
+
+@enduml

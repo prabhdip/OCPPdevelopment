@@ -1,0 +1,28 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Retrieve All Configuration  Keys
+
+actor "CPO" as CPO
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+CPO -> CS:  get configuration
+CS  -> CP:  getConfiguration.req
+activate CS
+CP  -> CS:  getConfiguration.req(all available keys)
+deactivate CS
+activate CP
+
+
+CS --> CPO: optional notification()
+
+
+deactivate CP
+deactivate CPO
+
+
+
+@enduml

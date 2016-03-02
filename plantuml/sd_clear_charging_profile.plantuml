@@ -1,0 +1,15 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+ 
+CS -> CP: ClearChargingProfile.req([id], [connectorId], [chargingProfilePurpose], [stackLevel])
+activate CS
+activate CP
+CP --> CS: ClearCache.conf(status)
+
+deactivate CS
+deactivate CP
+@enduml

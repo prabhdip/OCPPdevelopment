@@ -1,0 +1,36 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Change/Set Configuratiion
+
+actor "CPO" as CPO
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+
+CPO -> CS:  change/set configuration()
+CS  -> CP:  changeConfiguration.req()
+activate CS
+CP  -> CS:  changeConfiguration.conf(Accepted)
+deactivate CS
+activate CP
+
+
+CS --> CPO: optional notification()
+
+note right of CP
+"Accepted" only valid as
+response when charge point
+can change this configuration
+key to the requested value.
+end note
+
+deactivate CP
+deactivate CPO
+
+
+
+
+
+@enduml

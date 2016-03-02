@@ -1,0 +1,17 @@
+@startuml
+skinparam dpi 600
+hide footbox
+
+title Heartbeat
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CP -> CS: Heartbeat.req()
+activate CP
+activate CS
+CS --> CP: Heartbeat.conf(currentTime)
+
+deactivate CS
+deactivate CP
+@enduml

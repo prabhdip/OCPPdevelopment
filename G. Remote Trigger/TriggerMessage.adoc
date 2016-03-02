@@ -1,0 +1,141 @@
+<<<
+[[UseCases]]
+== Trigger Message
+
+===  UC.XX - Trigger Message +
+
+Functional Block: G. Remote Trigger
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Trigger Message
+|*2*    | *ID*                     | UC.XX
+|*3*    | *Objective(s)*           | To request the Charge Point, to send Charge Point-initiated messages.
+|*4*    | *Description*            | This use case describes the use of a Trigger Message, The <<triggermessage.req>> makes it possible for the Central System, to request the Charge Point, to send Charge Point-initiated messages.
+                                     In the request the Central System indicates which message it wishes to receive.
+|       | _Actors_                 | Charge Point, Central System
+|       | _Scenario description_   |
+                                      *1.* The Charge Point first sends the TriggerMessage response, before
+                                      sending the requested message. +
+                                      *2.* In the <<triggermessage.conf,TriggerMessage.conf>>
+                                      the Charge Point indicates whether it will send it or not, by
+                                      returning ACCEPTED or REJECTED. +
+                                      *3.* Messages that the Charge Point marks as accepted SHOULD be sent.
+|       | _Alternative scenarios_  |
+|*5*    | *Prerequisites*          | During normal operation.
+|*6*    | *Postconditions*         | *Successful postconditions:* +
+                                      The Charge Points returns the status ACCEPTED. +
+                                     *Failure postconditions:* +
+                                     The Charge Point returns the status REJECTED. +
+                                     The Charge Point returns the status NOT_IMPLEMENTED.
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+image:media/TriggerMessage.png["Trigger Message",scaledwidth="95%"]
+
+image:media/TriggerMessageExample.png["Trigger Message Example",scaledwidth="95%"]
+
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*8*    | *Error handling*         |
+|*9*    | *Remarks*                |  The TriggerMessage mechanism is not intended to retrieve historic data.
+                                      The messages it triggers should only give current information.
+                                      A <<metervalues.req,MeterValues>> message triggered in this way for instance SHOULD return
+                                      the most recent measurements for all measurands configured in configuration key <<configkey-meter-values-sampled-data, `MeterValuesSampledData`>>. <<starttransaction.req,StartTransaction>> and <<stoptransaction.req,StopTransaction>>
+                                      have been left out of this mechanism because they are not state related,
+                                      but by their nature describe a transition.
+
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+| *CH*  | *FR/NF/C* | *Precondition*                                                                 | *ID* | *Requirement definition*                                                                                                                                                          | *M/O/C* | *Rationale* | *Note*
+| 5.17 | FR      | In the request the Central System indicates which message it wishes to receive. For every such requested message. | FR.XX.XXX    | The Central System MAY optionally indicate to which connector this request applies.                                                      | O     | |
+| 5.17 | FR      |                                                                                                                   | FR.XX.XXX    | The requested message shall be leading.                                                                                                  | M     | If the specified connectorId is not relevant to the message, it should be ignored. In such cases the requested message should still be sent. |
+| 5.17 | FR      | If the specified connectorId is not relevant to the message.                                                      | FR.XX.XXX    | The connectorId shall be ignored. In such cases the requested message should still be sent.                                              | M     |                                                                                                                                              |
+| 5.17 | FR      |                                                                                                                   | FR.XX.XXX    | The Charge Point shall first send the TriggerMessage response, before sending the requested message.                                     | M     |                                                                                                                                              |
+| 5.17 | FR      | _see previous requirement_                                                                                        | FR.XX.XXX    | In the TriggerMessage.conf the Charge Point shall indicate whether it will send it or not, by returning ACCEPTED or REJECTED.            | M     |                                                                                                                                              | It is up to the Charge Point if it accepts or rejects the request to send.
+| 5.17 | FR      | If the requested message is unknown or not implemented.                                                           | FR.XX.XXX    | The Charge Point shall return NOT_IMPLEMENTED.                                                                                           | M     |                                                                                                                                              |
+| 5.17 | FR      |                                                                                                                   | FR.XX.XXX    | Messages that the Charge Point marks as accepted SHOULD be sent.                                                                         | C     |                                                                                                                                              | (e.g. the situation could occur that, between accepting the request and actually sending the requested message, that same message gets sent because of normal operations. In such cases the message just sent MAY be considered as complying with the request.)
+| 5.17 | FR      |                                                                                                                   | FR.XX.XXX    | The TriggerMessage mechanism should only give current information.                                                                       | C     |                                                                                                                                              | The TriggerMessage mechanism is not intended to retrieve historic data.
+| 5.17 | FR      | If a MeterValues message is triggered in this way.                                                                | FR.XX.XXX    | The TriggerMessage SHOULD return the most recent measurements for all measurands configured in configuration key MeterValuesSampledData. | C     |                                                                                                                                              | StartTransaction and StopTransaction have been left out of this mechanism because they are not state related, but by their nature describe a transition.
+|=======================================================================
+
+<insert Sequence diagram>
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+[[triggermessage.req]]
+=== TriggerMessage.req
+This contains the field definition of the TriggerMessage.req PDU sent by
+the Central System to the Charge Point.
+See also <<trigger-message>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*requestedMessage* a|<<messagetrigger,MessageTrigger>> |1..1|Required.
+|*connectorId* a|
+integer
+
+connectorId > 0
+
+ |0..1 |Optional. Only filled in when request applies to a specific connector.
+|=======================================================================
+
+[[triggermessage.conf]]
+=== TriggerMessage.conf
+This contains the field definition of the TriggerMessage.conf PDU sent by the
+Charge Point to the Central System in response to
+a <<triggermessage.req,TriggerMessage.req>> PDU.
+See also <<trigger-message>>
+
+[cols=",,,",options="header",]
+|=======================================================================
+|*Field Name* |*Field Type* |*Card.* |*Description*
+|*status* |<<triggermessagestatus,TriggerMessageStatus>> |1..1 |
+Required. Indicates whether the Charge Point will send the requested
+notification or not.
+|=======================================================================
+
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+[[messagetrigger]]
+=== MessageTrigger
+_Enumeration_
+
+Type of request to be triggered in a <<triggermessage.req,TriggerMessage.req>>.
+
+[cols=",",options="header",]
+|=======================================================================
+|*Value* |*Description*
+|*BootNotification* |To trigger a <<bootnotification.req,BootNotification>> request
+|*DiagnosticsStatusNotification* |To trigger a <<diagnosticsstatusnotification.req,DiagnosticsStatusNotification>> request
+|*FirmwareStatusNotification* |To trigger a <<firmwarestatusnotification.req,FirmwareStatusNotification>> request
+|*Heartbeat* |To trigger a <<heartbeat.req,Heartbeat>> request
+|*MeterValues* |To trigger a <<metervalues.req,MeterValues>> request
+|*StatusNotification* |To trigger a <<statusnotification.req,StatusNotification>> request
+|=======================================================================
+
+
+
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys
+
+
+
+No fields defined.

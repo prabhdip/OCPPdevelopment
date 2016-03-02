@@ -1,0 +1,43 @@
+@startuml
+Ussskinparam dpi 400
+hide footbox
+
+title User Authentication
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+activate EV
+EV -> CP:  plugin cable()
+activate CP
+CP -> CS: statusNotification.req(Preparing)
+
+activate CS
+CS --> CP: statusNotification.conf()
+deactivate CS
+
+
+
+EV -> CP:  present identification
+CP -> CS: Authorize.req
+activate CS
+CS --> CP: Authorize.conf
+deactivate CS
+
+CP --> EV: optional notification
+
+deactivate EV
+
+deactivate CS
+
+opt if unknown id
+CP -> CS: Authorize.req()
+activate CS
+CS --> CP: Authorize.conf()
+deactivate CP
+deactivate CS
+
+end
+
+@enduml

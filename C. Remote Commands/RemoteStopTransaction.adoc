@@ -1,0 +1,68 @@
+<<<
+[[UseCases]]
+== Use cases
+
+===  UC.XX - Remote Stop Transaction +
+
+[cols="^0,2,6",options="header",]
+|=======================================================================
+|*No.*  | *Type* | *Description*
+|*1*    | *Use case element name*  | Remote Stop Transaction
+|       | _Functional Block_       | C. Remote Commands
+|*2*    | *ID*                     | UC.XX
+|*3*    | *Objective(s)*           | *1.* To enable a CPO operator to help an EV driver that has problems stopping a transaction. +
+                                     *2.* Enable mobile apps to control charging transactions via the Central System.
+|*4*    | *Description*            | This use cases describes how the Central System requests the Charge Point to stop a transaction.
+|       | _Actors_                 | User, CPO, Charge Point, Central System
+|       | _Scenario description_   | *1.*. The Central System requests a Charge Point to stop a transaction by sending
+                                     a <<remotestoptransaction.req,RemoteStopTransaction.req>> to
+                                     Charge Point with the identifier of the transaction. +
+                                     *2.* The Charge Point replies with <<remotestoptransaction.conf,RemoteStopTransaction.conf>> to indicate
+                                     whether it is indeed able to stop the transaction. +
+                                     *3.* The transaction SHALL be stopped, The Charge Point SHALL send a <<stoptransaction.req,StopTransaction.req>>
+                                     and, if applicable, unlock the connector.
+        | _Alternative scenarios_  |
+*5*     | *Prerequisites*          | The _Core Profile_ is installed. +
+|*6*    | *Postconditions*         | *Successful postcondition:* +
+                                     *Failure postcondition:* +
+|*7*    | *Sequence diagram*       |
+|=======================================================================
+
+image:RemoteStopTransactionRunning.png["Remote Stop Transaction",scaledwidth="95%"]
+
+[cols="1,2,6",options="header",]
+|=======================================================================
+|*8*    | *Error handling*         | *1. Remote stop transaction - rejected
+|*9*    | *Remarks*                | This remote request to stop a transaction is equal to a local action to stop a transaction.
+|*10*   | *Test cases*             |  <insert relevant test cases, Paul Klapwijk>
+|=======================================================================
+
+=== UC.XX - Requirements +
+
+[width="100%", cols="^1,^1,2,^1,3,^1,2,2",options="noheader"]
+|=======================================================================
+|*ID.*       |*Precondition*        | *Requirement*                            | *M/O/C*
+|*FR.01.XXX* |                      |                                          |
+|*FR.01.XXX* |                      |                                          |
+|=======================================================================
+
+<insert Sequence diagram>
+
+
+
+
+<<<
+[[Messages]]
+== Messages
+
+
+
+
+
+<<<
+[[DataTypes]]
+== DataTypes
+
+<<<
+[[ConfigurationKeys]]
+== Configuration Keys

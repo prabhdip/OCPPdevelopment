@@ -1,0 +1,34 @@
+@startuml
+
+skinparam dpi 400
+hide footbox
+
+title Transaction related message not accepted by Central System
+
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+CP -> CS : transaction related message()
+
+loop while mesage not accepted and TransactionMessageAttempts not reached
+
+alt if message deliverd succesfull
+
+CS --> CP : transaction related message()
+
+CP ->o] Continue processing next message
+end
+
+alt
+CS --> CP : failure to process the message()
+
+CP -> CP : wait TransactionMessageAttempts x \n
+          TransactionMessageRetryInternavl seconds()
+
+CP -> CP : resend message()
+end
+end
+
+opt if TransactionmessageAttempts reseach
+
+CP -> CP : dispose message()

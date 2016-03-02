@@ -1,0 +1,24 @@
+@startuml
+skinparam dpi 400
+hide footbox
+title Remote Trigger - Non-Happy
+
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+CS  -> CP: TriggerMessage.req()
+activate CS
+activate CP
+
+alt if requested message will not be sent
+CP  --> CS:   TriggerMessage.req.conf(Rejected)
+deactivate CS
+deactivate CP
+end
+
+alt if requested message is not implemented or unknow
+CP  -->o CS:   TriggerMessage.req.conf(NotImplemented)
+end
+
+
+@enduml

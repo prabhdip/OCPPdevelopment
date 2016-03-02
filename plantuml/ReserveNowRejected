@@ -1,0 +1,21 @@
+@startuml
+skinparam dpi 400
+hide footbox
+
+title Reserve Now - Rejected
+
+actor "EV user" as EV
+participant "Charge Point" as CP
+participant "Central System" as CS
+
+
+EV o-> CS:  reserve
+activate CS
+CS -> CP: ReserveNow.req(reservationId)
+activate CP
+CP --> CS : ReserveNow.conf(Rejected)
+
+deactivate CS
+deactivate CP
+
+@enduml

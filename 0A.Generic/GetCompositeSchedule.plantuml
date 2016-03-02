@@ -1,0 +1,20 @@
+@startuml
+'skinparam dpi 600
+hide footbox
+
+title Get Composite Schedule
+
+participant "Central System" as CS
+participant "Charge Point" as CP
+
+CS -> CP :  GetCompositeSchedule.req(connectorId, duration)
+
+CP ->o CP : calculate\nschedule()
+activate CP
+activate CS
+CP --> CS : GetCompositeSchedule.conf(status, chargingSchedule)
+deactivate CP
+deactivate CS
+
+
+@enduml
